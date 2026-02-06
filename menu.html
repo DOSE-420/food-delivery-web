@@ -2447,7 +2447,29 @@ document.getElementById('bottomSheetAddToCart').addEventListener('click', () => 
   saveCart();
   closeMobileBottomSheet();
 });
+function updateMobileSeeMore() {
+  if (window.innerWidth > 768) return;
 
+  document.querySelectorAll('.menu-item .description').forEach(desc => {
+    const seeMoreBtn = desc.querySelector('.mobile-see-more');
+    if (!seeMoreBtn) return;
+
+    // Force layout calculation
+    requestAnimationFrame(() => {
+      if (desc.scrollHeight > desc.clientHeight + 1) {
+        seeMoreBtn.style.display = 'inline';
+      } else {
+        seeMoreBtn.style.display = 'none';
+      }
+    });
+  });
+}
+
+// Run after menu load
+updateMobileSeeMore();
+
+// Re-check on resize / orientation change
+window.addEventListener('resize', updateMobileSeeMore);
 // ============================================
 // INITIALIZE
 // ============================================
