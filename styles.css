@@ -1719,3 +1719,12 @@ footer a:hover {
   font-size: 14px;
   color: var(--text-medium);
 }
+
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select,
+  .input-with-icon input {
+    font-size: 16px; /* must be 16px or larger */
+  }
+}
