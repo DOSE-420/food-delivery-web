@@ -56,6 +56,20 @@ body {
   padding: 0 24px;
 }
 
+/* Tablets */
+@media (max-width: 992px) {
+  .logo img {
+    max-height: 34px;
+  }
+}
+
+/* Phones */
+@media (max-width: 576px) {
+  .logo img {
+    max-height: 26px;
+  }
+}
+
 .logo img {
   height: 48px;
   transition: transform var(--transition-base);
