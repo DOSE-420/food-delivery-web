@@ -64,12 +64,7 @@ body {
 .logo img:hover {
   transform: scale(1.05);
 }
-/* Hide footer on phones & tablets */
-@media (max-width: 1024px) {
-  footer {
-    display: none;
-  }
-}
+
 /* Navigation Links */
 .nav-links {
   display: flex;
@@ -1723,4 +1718,11 @@ footer a:hover {
 .stat-item span {
   font-size: 14px;
   color: var(--text-medium);
+}
+
+/* Hide footer on phones & tablets */
+@media (max-width: 1024px) {
+  footer {
+    display: none;
+  }
 }
