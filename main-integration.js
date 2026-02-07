@@ -143,7 +143,6 @@ class RatingManager {
     
     const pendingRatings = this.getPendingRatings();
     if (pendingRatings.length > 0) {
-      // Show rating modal for the most recent delivered order
       const mostRecent = pendingRatings[0];
       setTimeout(() => {
         this.show(mostRecent.restaurantId, mostRecent.orderId);
@@ -158,7 +157,6 @@ class RatingManager {
     const orders = JSON.parse(localStorage.getItem('userOrders_' + userId) || '[]');
     const ratings = JSON.parse(localStorage.getItem('restaurantRatings') || '[]');
     
-    // Find delivered orders that haven't been rated
     return orders.filter(order => {
       const isDelivered = order.status === 'delivered';
       const notRated = !ratings.find(r => r.orderId === order.id);
@@ -179,21 +177,17 @@ class RatingManager {
     this.currentRating = 0;
     this.selectedTags = [];
     
-    // Update modal content
     document.getElementById('ratingRestaurantName').textContent = restaurant.name;
     document.getElementById('reviewComment').value = '';
     
-    // Reset stars
     this.setRating(0);
     
-    // Reset tags
     document.querySelectorAll('.tag-btn').forEach(btn => {
       btn.classList.remove('active');
     });
     
     this.submitBtn.disabled = true;
     
-    // Show modal
     this.ratingModal.classList.add('show');
     document.body.style.overflow = 'hidden';
   }
@@ -257,21 +251,16 @@ class RatingManager {
       timestamp: new Date().toISOString()
     };
     
-    // Save rating
     const ratings = JSON.parse(localStorage.getItem('restaurantRatings') || '[]');
     ratings.push(rating);
     localStorage.setItem('restaurantRatings', JSON.stringify(ratings));
     
-    // Update restaurant average rating
     this.updateRestaurantRating(this.currentRestaurant.id);
     
-    // Show success message
     authManager.showSuccess('Thank you for your feedback!');
     
-    // Close modal
     this.close();
     
-    // Check for more pending ratings
     setTimeout(() => {
       this.checkPendingRatings();
     }, 1000);
@@ -284,14 +273,12 @@ class RatingManager {
     if (restaurantRatings.length > 0) {
       const avgRating = restaurantRatings.reduce((sum, r) => sum + r.rating, 0) / restaurantRatings.length;
       
-      // Update in restaurant data
       const restaurant = restaurants.find(r => r.id === restaurantId);
       if (restaurant) {
         restaurant.rating = Math.round(avgRating * 10) / 10;
         restaurant.reviews = (restaurant.reviews || 0) + 1;
       }
       
-      // Re-render restaurant cards
       renderRestaurants();
     }
   }
@@ -310,8 +297,10 @@ function renderRestaurants() {
   container.innerHTML = '';
   
   restaurants.forEach(restaurant => {
-    const card = document.createElement('div');
+    // Wrap entire card in <a> for redirect
+    const card = document.createElement('a');
     card.className = 'restaurant-card';
+    card.href = `menu.html?restaurant=${restaurant.id}`;
     card.dataset.lat = restaurant.lat;
     card.dataset.lon = restaurant.lon;
     card.dataset.cuisine = restaurant.cuisine;
@@ -323,7 +312,7 @@ function renderRestaurants() {
         <img src="${restaurant.image}" alt="${restaurant.name}">
         <div class="card-badges">
           <span class="offer-badge">${restaurant.offer}</span>
-          <button class="favorite-btn" onclick="toggleFavorite(this)">
+          <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this);">
             <i class="far fa-heart"></i>
           </button>
         </div>
@@ -350,22 +339,14 @@ function renderRestaurants() {
           <i class="fas fa-map-marker-alt"></i>
           <span>${restaurant.location} • <span class="distance">2.3 km</span></span>
         </div>
-        <a href="menu.html?restaurant=${restaurant.id}" class="menu-btn">View Menu</a>
       </div>
     `;
     
     container.appendChild(card);
   });
   
-  // Apply favorites
-  if (favoritesManager) {
-    favoritesManager.init();
-  }
-  
-  // Apply location data
-  if (locationManager) {
-    locationManager.init();
-  }
+  if (favoritesManager) favoritesManager.init();
+  if (locationManager) locationManager.init();
 }
 
 // ==================== TOGGLE FAVORITE ====================
@@ -375,35 +356,25 @@ function toggleFavorite(btn) {
   }
 }
 
-// ==================== CHECKOUT INTEGRATION - BLINKIT STYLE ====================
+// ==================== CHECKOUT INTEGRATION ====================
 const originalCheckoutBtn = document.getElementById('checkoutBtn');
 if (originalCheckoutBtn) {
   originalCheckoutBtn.addEventListener('click', () => {
     const cart = JSON.parse(localStorage.getItem('cart')) || {};
     
-    // Check if cart is empty
     if (Object.keys(cart).length === 0) {
       authManager.showError('main', 'Your cart is empty!');
       return;
     }
     
-    // Check if user is logged in
     if (!authManager.isLoggedIn()) {
-      // Store redirect intention
       sessionStorage.setItem('redirectAfterLogin', 'checkout.html');
-      
-      // Close cart drawer if it's open
       const cartDrawer = document.getElementById('cartDrawer');
-      if (cartDrawer && cartDrawer.classList.contains('open')) {
-        cartDrawer.classList.remove('open');
-      }
-      
-      // Show guest prompt modal (BLINKIT STYLE)
+      if (cartDrawer?.classList.contains('open')) cartDrawer.classList.remove('open');
       authManager.showGuestPrompt();
       return;
     }
     
-    // Proceed to checkout
     window.location.href = 'checkout.html';
   });
 }
@@ -412,11 +383,7 @@ if (originalCheckoutBtn) {
 let ratingManager;
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Render restaurants
   renderRestaurants();
-  
-  // Initialize rating manager
   ratingManager = new RatingManager();
-  
   console.log('MeroEats Integration System Loaded');
 });
