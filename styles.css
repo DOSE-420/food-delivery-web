@@ -37,7 +37,7 @@ body {
   position: fixed;
   top: 0;
   width: 100%;
-  background: var(--bg-white);
+  background: #09453F;
   height: 72px;
   display: flex;
   align-items: center;
