@@ -88,7 +88,7 @@ body {
 
 .nav-link {
   text-decoration: none;
-  color: var(--text-dark);
+  color: #03C01E;
   font-weight: 500;
   font-size: 15px;
   transition: color var(--transition-base);
