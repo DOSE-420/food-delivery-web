@@ -64,7 +64,12 @@ body {
 .logo img:hover {
   transform: scale(1.05);
 }
-
+/* Hide footer on phones & tablets */
+@media (max-width: 1024px) {
+  footer {
+    display: none;
+  }
+}
 /* Navigation Links */
 .nav-links {
   display: flex;
