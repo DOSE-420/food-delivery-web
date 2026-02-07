@@ -36,7 +36,10 @@
     transform: translateY(0);
   }
 }
-
+input {
+  font-size: 16px;
+  transform: scale(0.95);
+}
 .qr-code-container {
   text-align: center;
   margin-bottom: 25px;
