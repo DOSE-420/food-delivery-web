@@ -211,7 +211,11 @@ body {
   background: transparent;
   font-family: 'Poppins', sans-serif;
 }
-
+input,
+textarea,
+select {
+  font-size: 16px;
+}
 /* ==================== HERO SECTION ==================== */
 .hero {
   margin-top: 72px;
