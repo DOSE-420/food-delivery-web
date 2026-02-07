@@ -1,6 +1,6 @@
 // ====================================================================================
-// AUTHENTICATION MANAGER
-// Handles user login, signup, session management like Uber Eats/Zomato
+// AUTHENTICATION MANAGER - BLINKIT STYLE
+// Handles user login, signup, session management with checkout protection
 // ====================================================================================
 
 class AuthManager {
@@ -10,6 +10,7 @@ class AuthManager {
     this.guestPromptModal = document.getElementById('guestPromptModal');
     this.loginFormContainer = document.getElementById('loginFormContainer');
     this.signupFormContainer = document.getElementById('signupFormContainer');
+    this.redirectAfterLogin = null;
     this.init();
   }
 
@@ -125,12 +126,8 @@ class AuthManager {
     this.updateUI();
     this.showSuccess('Welcome back, ' + user.name.split(' ')[0] + '!');
     
-    // If there was a redirect intention, handle it
-    if (sessionStorage.getItem('redirectAfterLogin')) {
-      const redirect = sessionStorage.getItem('redirectAfterLogin');
-      sessionStorage.removeItem('redirectAfterLogin');
-      window.location.href = redirect;
-    }
+    // Handle redirect after login
+    this.handlePostLoginRedirect();
   }
 
   handleSignup(e) {
@@ -198,11 +195,27 @@ class AuthManager {
     this.updateUI();
     this.showSuccess('Account created successfully! Welcome, ' + name.split(' ')[0] + '!');
     
-    // If there was a redirect intention, handle it
+    // Handle redirect after signup
+    this.handlePostLoginRedirect();
+  }
+
+  handlePostLoginRedirect() {
+    // Check if there was a redirect intention
     if (sessionStorage.getItem('redirectAfterLogin')) {
       const redirect = sessionStorage.getItem('redirectAfterLogin');
       sessionStorage.removeItem('redirectAfterLogin');
-      window.location.href = redirect;
+      
+      // Small delay to show success message
+      setTimeout(() => {
+        window.location.href = redirect;
+      }, 1000);
+    } else if (this.redirectAfterLogin) {
+      const redirect = this.redirectAfterLogin;
+      this.redirectAfterLogin = null;
+      
+      setTimeout(() => {
+        window.location.href = redirect;
+      }, 1000);
     }
   }
 
@@ -294,7 +307,7 @@ class AuthManager {
     }
   }
 
-  // ==================== CHECKOUT GUARD ====================
+  // ==================== CHECKOUT GUARD - BLINKIT STYLE ====================
   
   requireAuth(redirectUrl = 'checkout.html') {
     if (!this.isLoggedIn()) {
@@ -308,6 +321,27 @@ class AuthManager {
 
   isLoggedIn() {
     return this.currentUser !== null;
+  }
+
+  // ==================== CART CHECKOUT PROTECTION ====================
+  
+  protectCheckout() {
+    // Check cart items
+    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    
+    if (Object.keys(cart).length === 0) {
+      this.showError('main', 'Your cart is empty!');
+      return false;
+    }
+    
+    // Check if logged in
+    if (!this.isLoggedIn()) {
+      this.redirectAfterLogin = 'checkout.html';
+      this.showGuestPrompt();
+      return false;
+    }
+    
+    return true;
   }
 
   // ==================== UTILITY ====================
@@ -381,10 +415,15 @@ document.addEventListener('DOMContentLoaded', () => {
   authManager = new AuthManager();
 });
 
-// ==================== CHECKOUT INTEGRATION ====================
+// ==================== CHECKOUT INTEGRATION - BLINKIT STYLE ====================
 // This function should be called before allowing checkout
 
 function proceedToCheckout() {
+  if (!authManager) {
+    console.error('Auth manager not initialized');
+    return;
+  }
+  
   const cart = JSON.parse(localStorage.getItem('cart')) || {};
   
   // Check if cart is empty
@@ -393,8 +432,9 @@ function proceedToCheckout() {
     return;
   }
   
-  // Check if user is logged in
+  // Check if user is logged in - if not, show guest prompt
   if (!authManager.isLoggedIn()) {
+    authManager.redirectAfterLogin = 'checkout.html';
     authManager.showGuestPrompt();
     return;
   }
@@ -452,6 +492,82 @@ style.textContent = `
   
   .success-notification i {
     font-size: 20px;
+  }
+  
+  /* Saved Addresses Section */
+  .saved-addresses-section {
+    background: var(--bg-light);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .saved-addresses-section h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .saved-addresses-section h3 i {
+    color: var(--primary);
+  }
+  
+  .saved-addresses-list {
+    display: grid;
+    gap: 12px;
+  }
+  
+  .saved-address-card {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    border: 2px solid #E0E0E0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  
+  .saved-address-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(226, 55, 68, 0.15);
+  }
+  
+  .saved-address-card.selected {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  
+  .saved-address-card .fa-check-circle {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: var(--primary);
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .saved-address-card.selected .fa-check-circle {
+    opacity: 1;
+  }
+  
+  .address-type {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  
+  .address-text {
+    font-size: 14px;
+    color: var(--text-dark);
+    line-height: 1.5;
   }
 `;
 document.head.appendChild(style);

@@ -442,23 +442,58 @@ document.addEventListener('click', e => {
 
 document.getElementById('clearCartBtn').addEventListener('click', clearCart);
 
-// Checkout button - check if cart is empty
+// ============================================
+// CHECKOUT WITH AUTHENTICATION - BLINKIT STYLE
+// ============================================
+
+// Checkout button - check cart and authentication
 document.getElementById('checkoutBtn').addEventListener('click', () => {
-  if (Object.keys(cart).length === 0) {
-    showAlert('Your cart is empty! Please add some items before checkout.', null);
-  } else {
-    window.location.href = 'checkout.html';
-  }
+  handleCheckoutClick();
 });
 
-// Place order button - check if cart is empty
+// Place order button - check cart and authentication  
 placeOrderBtn.addEventListener('click', () => {
+  handleCheckoutClick();
+});
+
+function handleCheckoutClick() {
+  // Check if cart is empty
   if (Object.keys(cart).length === 0) {
     showAlert('Your cart is empty! Please add some items before checkout.', null);
-  } else {
-    window.location.href = 'checkout.html';
+    return;
   }
-});
+  
+  // Check if user is logged in
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  
+  if (!currentUser) {
+    // User not logged in - show guest prompt modal (BLINKIT STYLE)
+    const guestPromptModal = document.getElementById('guestPromptModal');
+    if (guestPromptModal) {
+      // Store redirect intention
+      sessionStorage.setItem('redirectAfterLogin', 'checkout.html');
+      
+      // Close cart drawer if open
+      const cartDrawer = document.querySelector('.cart-floating-drawer');
+      if (cartDrawer) {
+        cartDrawer.classList.remove('open');
+      }
+      
+      // Show guest prompt modal
+      guestPromptModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Fallback if modal not found - redirect to index with alert
+      alert('Please login to continue to checkout');
+      sessionStorage.setItem('redirectAfterLogin', 'checkout.html');
+      window.location.href = 'index.html';
+    }
+    return;
+  }
+  
+  // User is logged in and cart has items - proceed to checkout
+  window.location.href = 'checkout.html';
+}
 
 // ============================================
 // ALERT MODAL

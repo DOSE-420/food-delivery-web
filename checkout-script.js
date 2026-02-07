@@ -1,4 +1,79 @@
 // ============================================
+// AUTHENTICATION CHECK - LIKE BLINKIT
+// ============================================
+// Check if user is logged in on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  
+  if (!currentUser) {
+    // Redirect to home page if not logged in
+    alert('Please login to continue checkout');
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  // Auto-fill form with user data
+  autoFillUserData(currentUser);
+  
+  // Initialize all checkout functionality
+  initializeCheckout();
+});
+
+function autoFillUserData(user) {
+  // Auto-fill name, email, phone from logged-in user
+  document.getElementById('fullName').value = user.name || '';
+  document.getElementById('email').value = user.email || '';
+  document.getElementById('phone').value = user.phone || '';
+  
+  // Get saved addresses from user profile
+  const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
+  const userProfile = allUsers.find(u => u.email === user.email);
+  
+  if (userProfile && userProfile.savedAddresses && userProfile.savedAddresses.length > 0) {
+    // Show saved addresses section
+    displaySavedAddresses(userProfile.savedAddresses);
+  }
+}
+
+function displaySavedAddresses(addresses) {
+  const addressSection = document.createElement('div');
+  addressSection.className = 'saved-addresses-section';
+  addressSection.innerHTML = `
+    <h3><i class="fas fa-map-marker-alt"></i> Saved Addresses</h3>
+    <div class="saved-addresses-list">
+      ${addresses.map((addr, index) => `
+        <div class="saved-address-card" onclick="selectSavedAddress(${index})">
+          <div class="address-type">${addr.type || 'Home'}</div>
+          <div class="address-text">${addr.address}, ${addr.area}, ${addr.city}</div>
+          <i class="fas fa-check-circle"></i>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  
+  const form = document.getElementById('deliveryForm');
+  form.insertBefore(addressSection, form.firstChild);
+}
+
+window.selectSavedAddress = function(index) {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
+  const userProfile = allUsers.find(u => u.email === currentUser.email);
+  
+  if (userProfile && userProfile.savedAddresses[index]) {
+    const addr = userProfile.savedAddresses[index];
+    document.getElementById('address').value = addr.address || '';
+    document.getElementById('city').value = addr.city || '';
+    document.getElementById('area').value = addr.area || '';
+    
+    // Highlight selected address
+    document.querySelectorAll('.saved-address-card').forEach((card, i) => {
+      card.classList.toggle('selected', i === index);
+    });
+  }
+};
+
+// ============================================
 // INITIALIZE FROM LOCALSTORAGE
 // ============================================
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
@@ -23,12 +98,11 @@ let uploadedScreenshot = null;
 
 // Sample QR code images (replace with actual QR codes from eSewa/Fonepay)
 const paymentQRCodes = {
-  esewa: 'https://via.placeholder.com/200x200/60d394/ffffff?text=eSewa+QR', // Replace with actual eSewa QR
-  fonepay: 'https://via.placeholder.com/200x200/3498db/ffffff?text=Fonepay+QR' // Replace with actual Fonepay QR
+  esewa: 'https://via.placeholder.com/200x200/60d394/ffffff?text=eSewa+QR',
+  fonepay: 'https://via.placeholder.com/200x200/3498db/ffffff?text=Fonepay+QR'
 };
 
-// Payment method change handler
-document.addEventListener('DOMContentLoaded', function() {
+function initializeCheckout() {
   const paymentMethodRadios = document.querySelectorAll('input[name="summaryPaymentMethod"]');
   const qrPaymentSection = document.getElementById('qrPaymentSection');
   const qrCodeImage = document.getElementById('qrCodeImage');
@@ -120,9 +194,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Initialize on load
+  // Initialize delivery time handlers
+  initDeliveryTime();
+  
+  // Initialize location picker
+  initLocationPicker();
+  
+  // Initialize place order button
+  initPlaceOrderButton();
+  
+  // Load cart items
   loadCartItems();
-});
+}
 
 function clearPaymentScreenshot() {
   const paymentScreenshotInput = document.getElementById('paymentScreenshot');
@@ -247,70 +330,77 @@ function updateCartCount(count) {
   document.getElementById('cartCount').textContent = count;
 }
 
+// ============================================
+// PROMO CODE
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+  const applyPromoBtn = document.getElementById('applyPromo');
+  if (applyPromoBtn) {
+    applyPromoBtn.addEventListener('click', applyPromoCode);
+  }
+});
+
+function applyPromoCode() {
+  const promoInput = document.getElementById('promoCode');
+  const promoMessage = document.getElementById('promoMessage');
+  const code = promoInput.value.toUpperCase();
+  
+  if (promoCodes[code]) {
+    appliedDiscount = promoCodes[code];
+    promoMessage.textContent = `Promo code applied! You saved NPR ${appliedDiscount}`;
+    promoMessage.style.color = 'var(--success)';
+    calculateTotal();
+    updateQRAmount();
+  } else {
+    promoMessage.textContent = 'Invalid promo code';
+    promoMessage.style.color = 'var(--danger)';
+    appliedDiscount = 0;
+    calculateTotal();
+    updateQRAmount();
+  }
+}
+
 function calculateTotal() {
   let subtotal = 0;
-  
   for (let itemName in cart) {
     subtotal += cart[itemName].price * cart[itemName].qty;
   }
   
   const deliveryFee = 50;
-  const discount = appliedDiscount;
-  const total = subtotal + deliveryFee - discount;
+  const total = subtotal + deliveryFee - appliedDiscount;
   
   document.getElementById('subtotal').textContent = `NPR ${subtotal}`;
   document.getElementById('deliveryFee').textContent = `NPR ${deliveryFee}`;
   document.getElementById('totalAmount').textContent = `NPR ${total}`;
   
-  if (discount > 0) {
+  if (appliedDiscount > 0) {
     document.getElementById('discountRow').style.display = 'flex';
-    document.getElementById('discountAmount').textContent = `- NPR ${discount}`;
+    document.getElementById('discountAmount').textContent = `- NPR ${appliedDiscount}`;
   } else {
     document.getElementById('discountRow').style.display = 'none';
   }
   
-  // Update QR amount
   updateQRAmount();
 }
 
 // ============================================
-// PROMO CODE
+// LOCATION PICKER
 // ============================================
-document.getElementById('applyPromo').addEventListener('click', function() {
-  const promoInput = document.getElementById('promoCode');
-  const promoMessage = document.getElementById('promoMessage');
-  const code = promoInput.value.trim().toUpperCase();
-  
-  if (promoCodes[code]) {
-    appliedDiscount = promoCodes[code];
-    promoMessage.textContent = `Promo code applied! NPR ${appliedDiscount} discount`;
-    promoMessage.style.color = '#48C479';
-    calculateTotal();
-  } else if (code === '') {
-    promoMessage.textContent = 'Please enter a promo code';
-    promoMessage.style.color = '#E23744';
-  } else {
-    promoMessage.textContent = 'Invalid promo code';
-    promoMessage.style.color = '#E23744';
-  }
-});
-
-// ============================================
-// LEAFLET MAP
-// ============================================
-document.getElementById('getCurrentLocation').addEventListener('click', function() {
-  const mapContainer = document.getElementById('mapContainer');
-  
-  if (mapContainer.style.display === 'none') {
-    mapContainer.style.display = 'block';
+function initLocationPicker() {
+  document.getElementById('getCurrentLocation').addEventListener('click', function() {
+    const mapContainer = document.getElementById('mapContainer');
     
-    if (!map) {
-      // Initialize map
-      map = L.map('map').setView([27.7172, 85.3240], 13); // Kathmandu coordinates
+    if (mapContainer.style.display === 'none' || !mapContainer.style.display) {
+      mapContainer.style.display = 'block';
       
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(map);
+      // Initialize map if not already initialized
+      if (!map) {
+        map = L.map('map').setView([27.7172, 85.3240], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+      }
       
       // Try to get user's current location
       if (navigator.geolocation) {
@@ -355,107 +445,117 @@ document.getElementById('getCurrentLocation').addEventListener('click', function
           `Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
       });
     }
-  }
-});
+  });
+}
 
 // ============================================
 // DELIVERY TIME SCHEDULING
 // ============================================
-document.querySelectorAll('input[name="deliveryTime"]').forEach(radio => {
-  radio.addEventListener('change', function() {
-    const scheduleTime = document.getElementById('scheduleTime');
-    if (this.value === 'scheduled') {
-      scheduleTime.style.display = 'block';
-      
-      // Set minimum datetime to current time
-      const now = new Date();
-      now.setMinutes(now.getMinutes() + 30); // Add 30 minutes buffer
-      const minDateTime = now.toISOString().slice(0, 16);
-      document.getElementById('scheduledDateTime').min = minDateTime;
-    } else {
-      scheduleTime.style.display = 'none';
-    }
+function initDeliveryTime() {
+  document.querySelectorAll('input[name="deliveryTime"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const scheduleTime = document.getElementById('scheduleTime');
+      if (this.value === 'scheduled') {
+        scheduleTime.style.display = 'block';
+        
+        // Set minimum datetime to current time
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + 30); // Add 30 minutes buffer
+        const minDateTime = now.toISOString().slice(0, 16);
+        document.getElementById('scheduledDateTime').min = minDateTime;
+      } else {
+        scheduleTime.style.display = 'none';
+      }
+    });
   });
-});
+}
 
 // ============================================
 // FORM VALIDATION & PLACE ORDER
 // ============================================
-document.getElementById('placeOrderBtn').addEventListener('click', function() {
-  const form = document.getElementById('deliveryForm');
-  
-  // Check if form is valid
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    return;
-  }
-  
-  // Check if cart is empty
-  if (Object.keys(cart).length === 0) {
-    alert('Your cart is empty!');
-    return;
-  }
-  
-  // Check if payment method is selected
-  const selectedPaymentMethodEl = document.querySelector('input[name="summaryPaymentMethod"]:checked');
-  if (!selectedPaymentMethodEl) {
-    alert('Please select a payment method');
-    return;
-  }
-  
-  const selectedPaymentMethod = selectedPaymentMethodEl.value;
-  
-  // Check payment method and screenshot requirement
-  if ((selectedPaymentMethod === 'esewa' || selectedPaymentMethod === 'fonepay') && !uploadedScreenshot) {
-    alert('Please upload payment screenshot before placing order');
-    return;
-  }
-  
-  // Get form data
-  const formData = {
-    fullName: document.getElementById('fullName').value,
-    phone: document.getElementById('phone').value,
-    altPhone: document.getElementById('altPhone').value,
-    email: document.getElementById('email').value,
-    address: document.getElementById('address').value,
-    city: document.getElementById('city').value,
-    area: document.getElementById('area').value,
-    deliveryInstructions: document.getElementById('deliveryInstructions').value,
-    deliveryTime: document.querySelector('input[name="deliveryTime"]:checked').value,
-    scheduledDateTime: document.getElementById('scheduledDateTime').value,
-    paymentMethod: selectedPaymentMethod,
-    paymentScreenshot: uploadedScreenshot ? uploadedScreenshot.name : null,
-    location: selectedLocation,
-    cart: cart,
-    restaurant: cartRestaurant,
-    subtotal: calculateSubtotal(),
-    deliveryFee: 50,
-    discount: appliedDiscount,
-    total: calculateFinalTotal()
-  };
-  
-  console.log('Order placed:', formData);
-  
-  // Update progress to complete
-  updateProgressToComplete();
-  
-  // Generate order ID
-  const orderId = '#' + Math.random().toString(36).substr(2, 9).toUpperCase();
-  document.getElementById('orderId').textContent = orderId;
-  
-  // Save order to localStorage for admin dashboard
-  saveOrderToAdmin(orderId, formData);
-  
-  // Show success modal
-  document.getElementById('successModal').style.display = 'flex';
-  
-  // Clear cart and screenshot
-  localStorage.removeItem('cart');
-  localStorage.removeItem('cartRestaurant');
-  cart = {};
-  cartRestaurant = '';
-  clearPaymentScreenshot();
-});
+function initPlaceOrderButton() {
+  document.getElementById('placeOrderBtn').addEventListener('click', function() {
+    const form = document.getElementById('deliveryForm');
+    
+    // Check if form is valid
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    
+    // Check if cart is empty
+    if (Object.keys(cart).length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+    
+    // Check if payment method is selected
+    const selectedPaymentMethodEl = document.querySelector('input[name="summaryPaymentMethod"]:checked');
+    if (!selectedPaymentMethodEl) {
+      alert('Please select a payment method');
+      return;
+    }
+    
+    const selectedPaymentMethod = selectedPaymentMethodEl.value;
+    
+    // Check payment method and screenshot requirement
+    if ((selectedPaymentMethod === 'esewa' || selectedPaymentMethod === 'fonepay') && !uploadedScreenshot) {
+      alert('Please upload payment screenshot before placing order');
+      return;
+    }
+    
+    // Get current user
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    // Get form data
+    const formData = {
+      fullName: document.getElementById('fullName').value,
+      phone: document.getElementById('phone').value,
+      altPhone: document.getElementById('altPhone').value,
+      email: document.getElementById('email').value || currentUser.email,
+      address: document.getElementById('address').value,
+      city: document.getElementById('city').value,
+      area: document.getElementById('area').value,
+      deliveryInstructions: document.getElementById('deliveryInstructions').value,
+      deliveryTime: document.querySelector('input[name="deliveryTime"]:checked').value,
+      scheduledDateTime: document.getElementById('scheduledDateTime').value,
+      paymentMethod: selectedPaymentMethod,
+      paymentScreenshot: uploadedScreenshot ? uploadedScreenshot.name : null,
+      location: selectedLocation,
+      cart: cart,
+      restaurant: cartRestaurant,
+      subtotal: calculateSubtotal(),
+      deliveryFee: 50,
+      discount: appliedDiscount,
+      total: calculateFinalTotal()
+    };
+    
+    console.log('Order placed:', formData);
+    
+    // Update progress to complete
+    updateProgressToComplete();
+    
+    // Generate order ID
+    const orderId = '#' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    document.getElementById('orderId').textContent = orderId;
+    
+    // Save order to localStorage for admin dashboard
+    saveOrderToAdmin(orderId, formData, currentUser);
+    
+    // Save order to user's order history
+    saveOrderToUser(orderId, formData, currentUser);
+    
+    // Show success modal
+    document.getElementById('successModal').style.display = 'flex';
+    
+    // Clear cart and screenshot
+    localStorage.removeItem('cart');
+    localStorage.removeItem('cartRestaurant');
+    cart = {};
+    cartRestaurant = '';
+    clearPaymentScreenshot();
+  });
+}
 
 function calculateSubtotal() {
   let subtotal = 0;
@@ -469,9 +569,19 @@ function calculateFinalTotal() {
   return calculateSubtotal() + 50 - appliedDiscount;
 }
 
-function saveOrderToAdmin(orderId, orderData) {
+function saveOrderToAdmin(orderId, orderData, currentUser) {
   // Get existing orders or initialize empty array
   let orders = JSON.parse(localStorage.getItem('adminOrders')) || [];
+  
+  // Transform cart object to items array
+  const items = [];
+  for (let itemName in orderData.cart) {
+    items.push({
+      name: itemName,
+      price: orderData.cart[itemName].price,
+      qty: orderData.cart[itemName].qty
+    });
+  }
   
   // Create order object
   const order = {
@@ -490,7 +600,7 @@ function saveOrderToAdmin(orderId, orderData) {
       location: orderData.location
     },
     restaurant: orderData.restaurant,
-    items: orderData.cart,
+    items: items,
     payment: {
       method: orderData.paymentMethod,
       subtotal: orderData.subtotal,
@@ -516,6 +626,46 @@ function saveOrderToAdmin(orderId, orderData) {
   
   // Trigger storage event for admin dashboard (if open in another tab)
   window.dispatchEvent(new Event('storage'));
+}
+
+function saveOrderToUser(orderId, orderData, currentUser) {
+  // Save to user-specific order history
+  const userId = currentUser.email;
+  const userOrdersKey = 'userOrders_' + userId;
+  let userOrders = JSON.parse(localStorage.getItem(userOrdersKey) || '[]');
+  
+  // Transform cart object to items array
+  const items = [];
+  for (let itemName in orderData.cart) {
+    items.push({
+      name: itemName,
+      price: orderData.cart[itemName].price,
+      qty: orderData.cart[itemName].qty
+    });
+  }
+  
+  const order = {
+    id: orderId,
+    restaurant: orderData.restaurant,
+    items: items,
+    payment: {
+      method: orderData.paymentMethod,
+      subtotal: orderData.subtotal,
+      deliveryFee: orderData.deliveryFee,
+      discount: orderData.discount,
+      total: orderData.total
+    },
+    delivery: {
+      address: orderData.address,
+      city: orderData.city,
+      area: orderData.area
+    },
+    status: 'pending',
+    timestamp: new Date().toISOString()
+  };
+  
+  userOrders.unshift(order);
+  localStorage.setItem(userOrdersKey, JSON.stringify(userOrders));
 }
 
 function calculateEstimatedDelivery() {
@@ -555,24 +705,29 @@ window.addEventListener('click', function(e) {
 const hamburger = document.getElementById('hamburger');
 const mobileNav = document.getElementById('mobileNav');
 
-hamburger.addEventListener('click', function(e) {
-  e.stopPropagation();
-  mobileNav.classList.toggle('open');
-});
+if (hamburger && mobileNav) {
+  hamburger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    mobileNav.classList.toggle('open');
+  });
 
-document.addEventListener('click', function(e) {
-  if (!mobileNav.contains(e.target) && !hamburger.contains(e.target)) {
-    mobileNav.classList.remove('open');
-  }
-});
+  document.addEventListener('click', function(e) {
+    if (!mobileNav.contains(e.target) && !hamburger.contains(e.target)) {
+      mobileNav.classList.remove('open');
+    }
+  });
+}
 
 // ============================================
 // CART BUTTON (GO BACK TO MENU)
 // ============================================
-document.getElementById('cartBtn').addEventListener('click', function() {
-  if (cartRestaurant) {
-    window.location.href = `menu.html?restaurant=${cartRestaurant}`;
-  } else {
-    window.location.href = 'index.html';
-  }
-});
+const cartBtn = document.getElementById('cartBtn');
+if (cartBtn) {
+  cartBtn.addEventListener('click', function() {
+    if (cartRestaurant) {
+      window.location.href = `menu.html?restaurant=${cartRestaurant}`;
+    } else {
+      window.location.href = 'index.html';
+    }
+  });
+}

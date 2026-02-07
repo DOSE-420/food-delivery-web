@@ -375,7 +375,7 @@ function toggleFavorite(btn) {
   }
 }
 
-// ==================== CHECKOUT INTEGRATION ====================
+// ==================== CHECKOUT INTEGRATION - BLINKIT STYLE ====================
 const originalCheckoutBtn = document.getElementById('checkoutBtn');
 if (originalCheckoutBtn) {
   originalCheckoutBtn.addEventListener('click', () => {
@@ -389,6 +389,16 @@ if (originalCheckoutBtn) {
     
     // Check if user is logged in
     if (!authManager.isLoggedIn()) {
+      // Store redirect intention
+      sessionStorage.setItem('redirectAfterLogin', 'checkout.html');
+      
+      // Close cart drawer if it's open
+      const cartDrawer = document.getElementById('cartDrawer');
+      if (cartDrawer && cartDrawer.classList.contains('open')) {
+        cartDrawer.classList.remove('open');
+      }
+      
+      // Show guest prompt modal (BLINKIT STYLE)
       authManager.showGuestPrompt();
       return;
     }
