@@ -15,6 +15,174 @@ let appliedDiscount = 0;
 let map = null;
 let marker = null;
 let selectedLocation = null;
+let uploadedScreenshot = null;
+
+// ============================================
+// PAYMENT QR CODE & SCREENSHOT FUNCTIONALITY
+// ============================================
+
+// Sample QR code images (replace with actual QR codes from eSewa/Fonepay)
+const paymentQRCodes = {
+  esewa: 'https://via.placeholder.com/200x200/60d394/ffffff?text=eSewa+QR', // Replace with actual eSewa QR
+  fonepay: 'https://via.placeholder.com/200x200/3498db/ffffff?text=Fonepay+QR' // Replace with actual Fonepay QR
+};
+
+// Payment method change handler
+document.addEventListener('DOMContentLoaded', function() {
+  const paymentMethodRadios = document.querySelectorAll('input[name="summaryPaymentMethod"]');
+  const qrPaymentSection = document.getElementById('qrPaymentSection');
+  const qrCodeImage = document.getElementById('qrCodeImage');
+  const qrPaymentTitle = document.getElementById('qrPaymentTitle');
+  const qrInstructions = document.getElementById('qrInstructions');
+  const qrAmount = document.getElementById('qrAmount');
+
+  // Explicitly uncheck all payment methods on page load
+  paymentMethodRadios.forEach(radio => {
+    radio.checked = false;
+  });
+
+  paymentMethodRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      const selectedMethod = this.value;
+      
+      if (selectedMethod === 'esewa' || selectedMethod === 'fonepay') {
+        // Show QR code section
+        qrPaymentSection.style.display = 'block';
+        
+        // Update QR code and text based on payment method
+        if (selectedMethod === 'esewa') {
+          qrCodeImage.src = paymentQRCodes.esewa;
+          qrPaymentTitle.textContent = 'Scan QR with eSewa';
+          qrInstructions.textContent = 'Open eSewa app and scan this QR code to complete payment';
+        } else if (selectedMethod === 'fonepay') {
+          qrCodeImage.src = paymentQRCodes.fonepay;
+          qrPaymentTitle.textContent = 'Scan QR with Fonepay';
+          qrInstructions.textContent = 'Open Fonepay app and scan this QR code to complete payment';
+        }
+        
+        // Update amount in QR section
+        updateQRAmount();
+        
+      } else {
+        // Hide QR code section for Cash on Delivery
+        qrPaymentSection.style.display = 'none';
+        clearPaymentScreenshot();
+      }
+      
+      // Update place order button state
+      updatePlaceOrderButton();
+    });
+  });
+
+  // Payment screenshot upload functionality
+  const paymentScreenshotInput = document.getElementById('paymentScreenshot');
+  const screenshotPreview = document.getElementById('screenshotPreview');
+  const previewImage = document.getElementById('previewImage');
+  const removeScreenshotBtn = document.getElementById('removeScreenshot');
+  const fileUploadText = document.getElementById('fileUploadText');
+
+  if (paymentScreenshotInput) {
+    paymentScreenshotInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      
+      if (file) {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          alert('Please upload an image file');
+          return;
+        }
+        
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('File size should not exceed 5MB');
+          return;
+        }
+        
+        // Read and display the image
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImage.src = e.target.result;
+          screenshotPreview.style.display = 'block';
+          fileUploadText.textContent = file.name;
+          uploadedScreenshot = file;
+          
+          // Enable place order button if screenshot is uploaded
+          updatePlaceOrderButton();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  if (removeScreenshotBtn) {
+    removeScreenshotBtn.addEventListener('click', function() {
+      clearPaymentScreenshot();
+    });
+  }
+  
+  // Initialize on load
+  loadCartItems();
+});
+
+function clearPaymentScreenshot() {
+  const paymentScreenshotInput = document.getElementById('paymentScreenshot');
+  const screenshotPreview = document.getElementById('screenshotPreview');
+  const previewImage = document.getElementById('previewImage');
+  const fileUploadText = document.getElementById('fileUploadText');
+  
+  if (paymentScreenshotInput) paymentScreenshotInput.value = '';
+  if (screenshotPreview) screenshotPreview.style.display = 'none';
+  if (previewImage) previewImage.src = '';
+  if (fileUploadText) fileUploadText.textContent = 'Choose Screenshot';
+  uploadedScreenshot = null;
+  updatePlaceOrderButton();
+}
+
+function updatePlaceOrderButton() {
+  const placeOrderBtn = document.getElementById('placeOrderBtn');
+  const selectedPaymentMethodEl = document.querySelector('input[name="summaryPaymentMethod"]:checked');
+  
+  if (!placeOrderBtn) return;
+  
+  // Check if cart is empty
+  if (Object.keys(cart).length === 0) {
+    placeOrderBtn.disabled = true;
+    placeOrderBtn.innerHTML = '<i class="fas fa-lock"></i> Cart is Empty';
+    return;
+  }
+  
+  // Check if payment method is selected
+  if (!selectedPaymentMethodEl) {
+    placeOrderBtn.disabled = true;
+    placeOrderBtn.innerHTML = '<i class="fas fa-credit-card"></i> Choose Payment Method';
+    return;
+  }
+  
+  const selectedPaymentMethod = selectedPaymentMethodEl.value;
+  
+  // For eSewa/Fonepay, require screenshot upload
+  if (selectedPaymentMethod === 'esewa' || selectedPaymentMethod === 'fonepay') {
+    if (uploadedScreenshot) {
+      placeOrderBtn.disabled = false;
+      placeOrderBtn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
+    } else {
+      placeOrderBtn.disabled = true;
+      placeOrderBtn.innerHTML = '<i class="fas fa-lock"></i> Upload Payment Proof';
+    }
+  } else {
+    // For COD, no screenshot needed
+    placeOrderBtn.disabled = false;
+    placeOrderBtn.innerHTML = '<i class="fas fa-lock"></i> Place Order';
+  }
+}
+
+function updateQRAmount() {
+  const totalAmountText = document.getElementById('totalAmount').textContent;
+  const qrAmount = document.getElementById('qrAmount');
+  if (qrAmount) {
+    qrAmount.textContent = totalAmountText;
+  }
+}
 
 // ============================================
 // LOAD CART ON PAGE LOAD
@@ -34,9 +202,9 @@ function loadCartItems() {
   if (Object.keys(cart).length === 0) {
     orderItemsContainer.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
     restaurantNameEl.textContent = 'No restaurant selected';
-    placeOrderBtn.disabled = true;
     updateCartCount(0);
     calculateTotal();
+    updatePlaceOrderButton();
     return;
   }
   
@@ -68,11 +236,11 @@ function loadCartItems() {
   // Update cart count
   updateCartCount(itemCount);
   
-  // Enable place order button if cart has items
-  placeOrderBtn.disabled = false;
-  
   // Calculate total
   calculateTotal();
+  
+  // Update place order button
+  updatePlaceOrderButton();
 }
 
 function updateCartCount(count) {
@@ -100,6 +268,9 @@ function calculateTotal() {
   } else {
     document.getElementById('discountRow').style.display = 'none';
   }
+  
+  // Update QR amount
+  updateQRAmount();
 }
 
 // ============================================
@@ -225,6 +396,21 @@ document.getElementById('placeOrderBtn').addEventListener('click', function() {
     return;
   }
   
+  // Check if payment method is selected
+  const selectedPaymentMethodEl = document.querySelector('input[name="summaryPaymentMethod"]:checked');
+  if (!selectedPaymentMethodEl) {
+    alert('Please select a payment method');
+    return;
+  }
+  
+  const selectedPaymentMethod = selectedPaymentMethodEl.value;
+  
+  // Check payment method and screenshot requirement
+  if ((selectedPaymentMethod === 'esewa' || selectedPaymentMethod === 'fonepay') && !uploadedScreenshot) {
+    alert('Please upload payment screenshot before placing order');
+    return;
+  }
+  
   // Get form data
   const formData = {
     fullName: document.getElementById('fullName').value,
@@ -237,7 +423,8 @@ document.getElementById('placeOrderBtn').addEventListener('click', function() {
     deliveryInstructions: document.getElementById('deliveryInstructions').value,
     deliveryTime: document.querySelector('input[name="deliveryTime"]:checked').value,
     scheduledDateTime: document.getElementById('scheduledDateTime').value,
-    paymentMethod: document.querySelector('input[name="summaryPaymentMethod"]:checked').value,
+    paymentMethod: selectedPaymentMethod,
+    paymentScreenshot: uploadedScreenshot ? uploadedScreenshot.name : null,
     location: selectedLocation,
     cart: cart,
     restaurant: cartRestaurant,
@@ -262,11 +449,12 @@ document.getElementById('placeOrderBtn').addEventListener('click', function() {
   // Show success modal
   document.getElementById('successModal').style.display = 'flex';
   
-  // Clear cart
+  // Clear cart and screenshot
   localStorage.removeItem('cart');
   localStorage.removeItem('cartRestaurant');
   cart = {};
   cartRestaurant = '';
+  clearPaymentScreenshot();
 });
 
 function calculateSubtotal() {
@@ -387,11 +575,4 @@ document.getElementById('cartBtn').addEventListener('click', function() {
   } else {
     window.location.href = 'index.html';
   }
-});
-
-// ============================================
-// INITIALIZE ON PAGE LOAD
-// ============================================
-document.addEventListener('DOMContentLoaded', function() {
-  loadCartItems();
 });

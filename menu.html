@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Premium Restaurant Menu</title>
+<link rel="stylesheet" href="styles.css">
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -43,7 +44,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ============ HEADER (MATCHING INDEX.HTML) ============ */
+/* ==================== HEADER ==================== */
 .header {
   position: fixed;
   top: 0;
@@ -69,13 +70,14 @@ body {
 
 .logo img {
   height: 48px;
-  transition: transform 0.2s ease;
+  transition: transform var(--transition-base);
 }
 
 .logo img:hover {
   transform: scale(1.05);
 }
 
+/* Navigation Links */
 .nav-links {
   display: flex;
   gap: 32px;
@@ -87,7 +89,7 @@ body {
   color: var(--text-dark);
   font-weight: 500;
   font-size: 15px;
-  transition: color 0.2s;
+  transition: color var(--transition-base);
   position: relative;
 }
 
@@ -99,7 +101,7 @@ body {
   width: 0;
   height: 2px;
   background: var(--primary);
-  transition: width 0.3s ease;
+  transition: width var(--transition-smooth);
 }
 
 .nav-link:hover {
@@ -110,6 +112,7 @@ body {
   width: 100%;
 }
 
+/* Hamburger Menu */
 .hamburger {
   display: none;
   font-size: 24px;
@@ -119,6 +122,7 @@ body {
   cursor: pointer;
 }
 
+/* Mobile Navigation */
 .mobile-nav {
   position: fixed;
   top: 72px;
@@ -131,7 +135,7 @@ body {
   flex-direction: column;
   gap: 20px;
   transform: translateX(100%);
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-smooth);
   z-index: 9998;
   box-shadow: -4px 0 20px rgba(0,0,0,0.1);
 }
@@ -147,13 +151,14 @@ body {
   font-size: 16px;
   padding: 12px 0;
   border-bottom: 1px solid rgba(0,0,0,0.05);
-  transition: color 0.2s;
+  transition: color var(--transition-base);
 }
 
 .mobile-nav a:hover {
   color: var(--primary);
 }
 
+/* Navigation Icons */
 .nav-icons {
   display: flex;
   align-items: center;
@@ -168,7 +173,7 @@ body {
   cursor: pointer;
   color: var(--text-dark);
   position: relative;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
   padding: 8px;
   border-radius: 8px;
 }
@@ -1599,7 +1604,7 @@ footer .bottom-line {
         <i class="fas fa-bars"></i>
       </button>
       <div class="search-wrap" id="searchWrap">
-        <input type="text" id="searchInput" placeholder="Search dishes...">
+        <input type="text" id="searchInput" placeholder="Search restaurants or cuisines...">
       </div>
       <button class="icon-btn" id="searchBtn">
         <i class="fas fa-magnifying-glass"></i>
@@ -1607,6 +1612,30 @@ footer .bottom-line {
       <button class="icon-btn" id="cartBtn">
         <i class="fas fa-shopping-cart"></i>
         <span class="cart-count" id="cartCount">0</span>
+      </button>
+      
+      <div class="user-menu" id="userMenu" style="display: none;">
+        <button class="icon-btn user-avatar" id="userAvatarBtn">
+          <i class="fas fa-user-circle"></i>
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <i class="fas fa-user-circle"></i>
+            <div>
+              <h4 id="userDisplayName">User Name</h4>
+              <p id="userDisplayEmail">user@email.com</p>
+            </div>
+          </div>
+          <a href="my-orders.html" id="myOrdersBtn"><i class="fas fa-receipt"></i> My Orders</a>
+          <a href="#" id="myProfileBtn"><i class="fas fa-user"></i> Profile</a>
+          <a href="#" id="savedAddressesBtn"><i class="fas fa-map-marker-alt"></i> Saved Addresses</a>
+          <a href="#" id="favoritesBtn"><i class="fas fa-heart"></i> Favorites</a>
+          <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+      </div>
+      
+      <button class="btn-login" id="loginBtn">
+        <i class="fas fa-user"></i> Login
       </button>
     </div>
   </div>
@@ -1616,7 +1645,7 @@ footer .bottom-line {
 <div class="mobile-nav" id="mobileNav">
   <a href="index.html">Home</a>
   <a href="#">Restaurants</a>
-  <a href="#">Support</a>
+  <a href="#">About</a>
   <a href="#">Contact</a>
 </div>
 
@@ -1662,6 +1691,191 @@ footer .bottom-line {
   <div class="category-nav"></div>
   <div id="menuContainer"></div>
 </main>
+
+<!-- AUTH MODAL -->
+<div class="auth-modal" id="authModal">
+  <div class="auth-modal-content">
+    <button class="auth-modal-close" id="authModalClose">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="auth-form-container" id="loginFormContainer">
+      <div class="auth-header">
+        <h2>Welcome Back</h2>
+        <p>Login to continue ordering delicious food</p>
+      </div>
+      
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="loginEmail">Email or Phone</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="text" id="loginEmail" required placeholder="Enter email or phone">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="loginPassword" required placeholder="Enter password">
+            <button type="button" class="toggle-password" data-target="loginPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-password">Forgot Password?</a>
+        </div>
+        
+        <button type="submit" class="btn-auth-submit">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+        
+        <div class="social-login">
+          <button type="button" class="btn-social google">
+            <i class="fab fa-google"></i> Continue with Google
+          </button>
+          <button type="button" class="btn-social facebook">
+            <i class="fab fa-facebook-f"></i> Continue with Facebook
+          </button>
+        </div>
+        
+        <div class="auth-switch">
+          <p>Don't have an account? <a href="#" id="showSignupForm">Sign Up</a></p>
+        </div>
+      </form>
+    </div>
+    
+    <div class="auth-form-container" id="signupFormContainer" style="display: none;">
+      <div class="auth-header">
+        <h2>Create Account</h2>
+        <p>Sign up to start ordering</p>
+      </div>
+      
+      <form id="signupForm" class="auth-form">
+        <div class="form-group">
+          <label for="signupName">Full Name</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="signupName" required placeholder="Enter your full name">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="signupEmail" required placeholder="Enter your email">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="signupPhone">Phone Number</label>
+          <div class="input-with-icon">
+            <i class="fas fa-phone"></i>
+            <input type="tel" id="signupPhone" required placeholder="98XXXXXXXX" pattern="[0-9]{10}">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signupPassword" required placeholder="Create a password" minlength="6">
+            <button type="button" class="toggle-password" data-target="signupPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <small class="password-hint">Must be at least 6 characters</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="signupConfirmPassword">Confirm Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signupConfirmPassword" required placeholder="Confirm your password">
+            <button type="button" class="toggle-password" data-target="signupConfirmPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="terms-accept">
+            <input type="checkbox" id="acceptTerms" required>
+            <span>I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></span>
+          </label>
+        </div>
+        
+        <button type="submit" class="btn-auth-submit">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+        
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+        
+        <div class="social-login">
+          <button type="button" class="btn-social google">
+            <i class="fab fa-google"></i> Sign up with Google
+          </button>
+          <button type="button" class="btn-social facebook">
+            <i class="fab fa-facebook-f"></i> Sign up with Facebook
+          </button>
+        </div>
+        
+        <div class="auth-switch">
+          <p>Already have an account? <a href="#" id="showLoginForm">Login</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- GUEST PROMPT MODAL -->
+<div class="guest-prompt-modal" id="guestPromptModal">
+  <div class="guest-prompt-content">
+    <div class="guest-prompt-header">
+      <i class="fas fa-user-lock"></i>
+      <h2>Login to Continue</h2>
+      <p>Please login or create an account to place your order</p>
+    </div>
+    
+    <div class="guest-prompt-benefits">
+      <h3>Why create an account?</h3>
+      <ul>
+        <li><i class="fas fa-check-circle"></i> Track your orders in real-time</li>
+        <li><i class="fas fa-check-circle"></i> Save addresses for faster checkout</li>
+        <li><i class="fas fa-check-circle"></i> View order history</li>
+        <li><i class="fas fa-check-circle"></i> Rate restaurants and share reviews</li>
+        <li><i class="fas fa-check-circle"></i> Exclusive offers and rewards</li>
+      </ul>
+    </div>
+    
+    <div class="guest-prompt-actions">
+      <button class="btn-guest-login" id="guestLoginBtn">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+      <button class="btn-guest-signup" id="guestSignupBtn">
+        <i class="fas fa-user-plus"></i> Create Account
+      </button>
+    </div>
+    
+    <button class="guest-prompt-close" id="guestPromptClose">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+</div>
 
 <!-- PLACE ORDER SECTION -->
 <section id="placeOrderSection">
@@ -1774,5 +1988,10 @@ footer .bottom-line {
 </div>
 
 <script src="menu-script.js"></script>
+<script src="script.js"></script>
+<script src="auth-script.js"></script>
+<script src="main-integration.js"></script>
+
+
 </body>
 </html>

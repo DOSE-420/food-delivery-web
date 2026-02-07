@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders - MeroEats</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="auth-styles.css">
+<link rel="stylesheet" href="my-orders-styles.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="nav-container">
+    <div class="logo">
+      <a href="index.html">
+        <img src="green.png" alt="MeroEats Logo">
+      </a>
+    </div>
+
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="index.html#restaurants" class="nav-link">Restaurants</a>
+      <a href="#" class="nav-link">About</a>
+      <a href="#" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="nav-icons">
+      <button class="hamburger" id="hamburger">
+        <i class="fas fa-bars"></i>
+      </button>
+      <button class="icon-btn" id="cartBtn">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      
+      <div class="user-menu" id="userMenu">
+        <button class="icon-btn user-avatar">
+          <i class="fas fa-user-circle"></i>
+        </button>
+        <div class="user-dropdown">
+          <div class="user-dropdown-header">
+            <i class="fas fa-user-circle"></i>
+            <div>
+              <h4 id="userDisplayName">User Name</h4>
+              <p id="userDisplayEmail">user@email.com</p>
+            </div>
+          </div>
+          <a href="my-orders.html" class="active"><i class="fas fa-receipt"></i> My Orders</a>
+          <a href="#"><i class="fas fa-user"></i> Profile</a>
+          <a href="#"><i class="fas fa-map-marker-alt"></i> Saved Addresses</a>
+          <a href="#"><i class="fas fa-heart"></i> Favorites</a>
+          <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html">Home</a>
+  <a href="index.html#restaurants">Restaurants</a>
+  <a href="#">About</a>
+  <a href="#">Contact</a>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h2>Your Cart</h2>
+    <button id="clearCartBtn">
+      <i class="fas fa-trash"></i> Clear All
+    </button>
+  </div>
+  <ul id="cartItems"></ul>
+  <div class="cart-total" id="cartTotal">Total: NPR 0</div>
+  <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="orders-main">
+  <div class="orders-container">
+    <h1 class="page-title">My Orders</h1>
+    
+    <!-- Order Tabs -->
+    <div class="order-tabs">
+      <button class="tab-btn active" data-tab="active">
+        <i class="fas fa-clock"></i> Active Orders
+        <span class="tab-badge" id="activeCount">0</span>
+      </button>
+      <button class="tab-btn" data-tab="past">
+        <i class="fas fa-history"></i> Past Orders
+      </button>
+    </div>
+    
+    <!-- Active Orders Tab -->
+    <div class="tab-content active" id="activeTab">
+      <div id="activeOrders" class="orders-grid">
+        <!-- Active orders will be loaded here -->
+      </div>
+      <div class="empty-state" id="emptyActive" style="display: none;">
+        <i class="fas fa-shopping-bag"></i>
+        <h3>No Active Orders</h3>
+        <p>You don't have any ongoing orders at the moment</p>
+        <a href="index.html" class="btn-primary">Browse Restaurants</a>
+      </div>
+    </div>
+    
+    <!-- Past Orders Tab -->
+    <div class="tab-content" id="pastTab">
+      <div id="pastOrders" class="orders-grid">
+        <!-- Past orders will be loaded here -->
+      </div>
+      <div class="empty-state" id="emptyPast" style="display: none;">
+        <i class="fas fa-history"></i>
+        <h3>No Order History</h3>
+        <p>You haven't placed any orders yet</p>
+        <a href="index.html" class="btn-primary">Start Ordering</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ORDER TRACKING MODAL -->
+<div class="modal" id="trackingModal">
+  <div class="modal-content tracking-modal">
+    <div class="modal-header">
+      <h2><i class="fas fa-map-marked-alt"></i> Track Order</h2>
+      <button class="modal-close" onclick="closeTrackingModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <!-- Order Info -->
+      <div class="tracking-order-info">
+        <div class="order-id-section">
+          <span class="label">Order ID:</span>
+          <span class="value" id="trackingOrderId">#ORD123456</span>
+        </div>
+        <div class="restaurant-info-section">
+          <i class="fas fa-utensils"></i>
+          <span id="trackingRestaurant">Restaurant Name</span>
+        </div>
+      </div>
+      
+      <!-- Status Timeline -->
+      <div class="status-timeline">
+        <div class="timeline-step completed">
+          <div class="timeline-icon"><i class="fas fa-check"></i></div>
+          <div class="timeline-content">
+            <h4>Order Placed</h4>
+            <p id="timeOrderPlaced">-</p>
+          </div>
+        </div>
+        <div class="timeline-step" id="stepConfirmed">
+          <div class="timeline-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="timeline-content">
+            <h4>Order Confirmed</h4>
+            <p id="timeConfirmed">-</p>
+          </div>
+        </div>
+        <div class="timeline-step" id="stepPreparing">
+          <div class="timeline-icon"><i class="fas fa-fire"></i></div>
+          <div class="timeline-content">
+            <h4>Preparing</h4>
+            <p id="timePreparing">-</p>
+          </div>
+        </div>
+        <div class="timeline-step" id="stepOutForDelivery">
+          <div class="timeline-icon"><i class="fas fa-motorcycle"></i></div>
+          <div class="timeline-content">
+            <h4>Out for Delivery</h4>
+            <p id="timeOutForDelivery">-</p>
+          </div>
+        </div>
+        <div class="timeline-step" id="stepDelivered">
+          <div class="timeline-icon"><i class="fas fa-home"></i></div>
+          <div class="timeline-content">
+            <h4>Delivered</h4>
+            <p id="timeDelivered">-</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Rider Info -->
+      <div class="rider-info" id="riderInfo" style="display: none;">
+        <h3><i class="fas fa-motorcycle"></i> Delivery Rider</h3>
+        <div class="rider-card">
+          <div class="rider-avatar-section">
+            <div class="rider-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="rider-details">
+              <h4 id="riderName">Rider Name</h4>
+              <div class="rider-rating">
+                <i class="fas fa-star"></i>
+                <span id="riderRating">4.8</span>
+              </div>
+            </div>
+          </div>
+          <div class="rider-actions">
+            <a href="#" class="btn-call" id="callRider">
+              <i class="fas fa-phone"></i> Call
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Live Map -->
+      <div class="live-map-section">
+        <h3><i class="fas fa-map-marked-alt"></i> Live Location</h3>
+        <div id="trackingMap" style="height: 300px; border-radius: 12px;"></div>
+      </div>
+      
+      <!-- Order Items -->
+      <div class="tracking-items">
+        <h3><i class="fas fa-shopping-bag"></i> Order Items</h3>
+        <div id="trackingOrderItems"></div>
+      </div>
+      
+      <!-- Delivery Address -->
+      <div class="tracking-address">
+        <h3><i class="fas fa-map-marker-alt"></i> Delivery Address</h3>
+        <p id="trackingAddress">-</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-container">
+    <div>
+      <h4>About MeroEats</h4>
+      <p>Delivering your favorite meals fast and fresh.</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <p><a href="#">About Us</a></p>
+      <p><a href="#">Careers</a></p>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <p><a href="#">Help Center</a></p>
+      <p><a href="#">Contact Us</a></p>
+    </div>
+  </div>
+  <div class="bottom-line">
+    © 2026 MeroEats. All rights reserved.
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+<script src="auth-script.js"></script>
+<script src="my-orders-script.js"></script>
+</body>
+</html>

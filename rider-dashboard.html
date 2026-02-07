@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rider Dashboard - MeroEats</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="rider-dashboard-styles.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="rider-header">
+  <div class="header-container">
+    <div class="logo">
+      <img src="green.png" alt="MeroEats" height="40">
+      <span class="rider-badge">RIDER</span>
+    </div>
+    <div class="rider-status-toggle">
+      <label class="toggle-switch">
+        <input type="checkbox" id="onlineToggle">
+        <span class="toggle-slider"></span>
+      </label>
+      <span class="status-text" id="statusText">Offline</span>
+    </div>
+    <div class="rider-profile">
+      <div class="rider-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="rider-info">
+        <h4 id="riderName">Rider Name</h4>
+        <div class="rider-rating">
+          <i class="fas fa-star"></i>
+          <span id="riderRating">4.8</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="rider-main">
+  
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <i class="fas fa-shopping-bag"></i>
+      </div>
+      <div class="stat-info">
+        <h3 id="todayDeliveries">0</h3>
+        <p>Today's Deliveries</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="stat-info">
+        <h3 id="pendingOrders">0</h3>
+        <p>Pending Requests</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="stat-info">
+        <h3 id="todayEarnings">NPR 0</h3>
+        <p>Today's Earnings</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <i class="fas fa-route"></i>
+      </div>
+      <div class="stat-info">
+        <h3 id="totalDistance">0 km</h3>
+        <p>Distance Today</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Delivery -->
+  <div class="current-delivery-section" id="currentDeliverySection" style="display: none;">
+    <h2><i class="fas fa-motorcycle"></i> Current Delivery</h2>
+    <div class="current-delivery-card" id="currentDeliveryCard">
+      <!-- Will be populated dynamically -->
+    </div>
+  </div>
+
+  <!-- Incoming Requests -->
+  <div class="requests-section" id="requestsSection">
+    <h2><i class="fas fa-bell"></i> Incoming Requests</h2>
+    <div id="requestsList" class="requests-list">
+      <!-- Will be populated dynamically -->
+    </div>
+    <div class="empty-state" id="emptyRequests">
+      <i class="fas fa-inbox"></i>
+      <h3>No Pending Requests</h3>
+      <p>New delivery requests will appear here</p>
+    </div>
+  </div>
+
+  <!-- Completed Deliveries Today -->
+  <div class="completed-section">
+    <h2><i class="fas fa-check-circle"></i> Completed Today</h2>
+    <div id="completedList" class="completed-list">
+      <!-- Will be populated dynamically -->
+    </div>
+    <div class="empty-state" id="emptyCompleted">
+      <i class="fas fa-clipboard-check"></i>
+      <h3>No Deliveries Yet</h3>
+      <p>Completed deliveries will appear here</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ORDER REQUEST MODAL -->
+<div class="modal" id="requestModal">
+  <div class="modal-content request-modal">
+    <div class="modal-header urgent">
+      <div class="pulse-animation"></div>
+      <h2><i class="fas fa-exclamation-circle"></i> New Delivery Request</h2>
+    </div>
+    <div class="modal-body">
+      <!-- Timer -->
+      <div class="request-timer">
+        <div class="timer-circle">
+          <svg class="timer-svg" width="120" height="120">
+            <circle class="timer-bg" cx="60" cy="60" r="54"></circle>
+            <circle class="timer-progress" id="timerProgress" cx="60" cy="60" r="54"></circle>
+          </svg>
+          <div class="timer-text" id="timerText">30</div>
+        </div>
+        <p class="timer-label">seconds to accept</p>
+      </div>
+      
+      <!-- Order Details -->
+      <div class="request-details">
+        <div class="detail-row">
+          <div class="detail-icon"><i class="fas fa-hashtag"></i></div>
+          <div class="detail-content">
+            <span class="detail-label">Order ID</span>
+            <span class="detail-value" id="requestOrderId">#ORD123456</span>
+          </div>
+        </div>
+        
+        <div class="detail-row">
+          <div class="detail-icon"><i class="fas fa-utensils"></i></div>
+          <div class="detail-content">
+            <span class="detail-label">Restaurant</span>
+            <span class="detail-value" id="requestRestaurant">Restaurant Name</span>
+          </div>
+        </div>
+        
+        <div class="detail-row">
+          <div class="detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div class="detail-content">
+            <span class="detail-label">Delivery Address</span>
+            <span class="detail-value" id="requestAddress">Address</span>
+          </div>
+        </div>
+        
+        <div class="detail-row">
+          <div class="detail-icon"><i class="fas fa-route"></i></div>
+          <div class="detail-content">
+            <span class="detail-label">Distance</span>
+            <span class="detail-value" id="requestDistance">2.5 km</span>
+          </div>
+        </div>
+        
+        <div class="detail-row highlight">
+          <div class="detail-icon"><i class="fas fa-dollar-sign"></i></div>
+          <div class="detail-content">
+            <span class="detail-label">Delivery Fee</span>
+            <span class="detail-value earnings" id="requestFee">NPR 50</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Map Preview -->
+      <div class="request-map-preview">
+        <div id="requestMap" style="height: 200px; border-radius: 12px;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-decline" onclick="declineRequest()">
+        <i class="fas fa-times"></i> Decline
+      </button>
+      <button class="btn-accept" onclick="acceptRequest()">
+        <i class="fas fa-check"></i> Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DELIVERY IN PROGRESS MODAL -->
+<div class="modal" id="deliveryModal">
+  <div class="modal-content delivery-modal">
+    <div class="modal-header delivery-header">
+      <h2><i class="fas fa-motorcycle"></i> Delivery in Progress</h2>
+    </div>
+    <div class="modal-body">
+      <!-- Customer Info -->
+      <div class="customer-info">
+        <h3><i class="fas fa-user"></i> Customer Details</h3>
+        <div class="info-card">
+          <p><strong>Name:</strong> <span id="customerName">-</span></p>
+          <p><strong>Phone:</strong> <a href="#" id="customerPhone" class="phone-link">-</a></p>
+          <p><strong>Address:</strong> <span id="customerAddress">-</span></p>
+          <p><strong>Instructions:</strong> <span id="deliveryInstructions">-</span></p>
+        </div>
+      </div>
+      
+      <!-- Navigation -->
+      <div class="navigation-section">
+        <h3><i class="fas fa-map-marked-alt"></i> Navigation</h3>
+        <div id="deliveryMap" style="height: 300px; border-radius: 12px; margin-bottom: 16px;"></div>
+        <button class="btn-navigate" id="openMapsBtn">
+          <i class="fas fa-directions"></i> Open in Google Maps
+        </button>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="delivery-actions">
+        <button class="btn-picked-up" id="pickedUpBtn" style="display: none;">
+          <i class="fas fa-box"></i> Mark as Picked Up
+        </button>
+        <button class="btn-complete-delivery" id="completeDeliveryBtn">
+          <i class="fas fa-check-circle"></i> Complete Delivery
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="rider-dashboard-script.js"></script>
+
+</body>
+</html>

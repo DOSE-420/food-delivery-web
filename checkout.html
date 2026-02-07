@@ -144,35 +144,6 @@
                 <p class="location-coords" id="locationCoords">Click on map or use current location</p>
               </div>
             </div>
-
-            <div class="delivery-time-section">
-              <h3>Preferred Delivery Time</h3>
-              <div class="delivery-time-options">
-                <label class="radio-card">
-                  <input type="radio" name="deliveryTime" value="asap" checked>
-                  <div class="radio-content">
-                    <i class="fas fa-bolt"></i>
-                    <div>
-                      <strong>ASAP</strong>
-                      <span>Deliver as soon as possible</span>
-                    </div>
-                  </div>
-                </label>
-                <label class="radio-card">
-                  <input type="radio" name="deliveryTime" value="scheduled">
-                  <div class="radio-content">
-                    <i class="fas fa-clock"></i>
-                    <div>
-                      <strong>Schedule</strong>
-                      <span>Choose a specific time</span>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div class="schedule-time" id="scheduleTime" style="display: none;">
-                <input type="datetime-local" id="scheduledDateTime" name="scheduledDateTime">
-              </div>
-            </div>
           </form>
         </div>
       </div>
@@ -182,13 +153,34 @@
         <div class="order-summary sticky">
           <h2 class="summary-title">Order Summary</h2>
           
-          <div class="restaurant-info" id="restaurantInfo">
-            <i class="fas fa-utensils"></i>
-            <span id="restaurantName">No restaurant selected</span>
-          </div>
-
-          <div class="order-items" id="orderItems">
-            <p class="empty-cart">Your cart is empty</p>
+          <!-- Preferred Delivery Time (moved here) -->
+          <div class="delivery-time-section">
+            <h3>Preferred Delivery Time</h3>
+            <div class="delivery-time-options">
+              <label class="radio-card">
+                <input type="radio" name="deliveryTime" value="asap" checked>
+                <div class="radio-content">
+                  <i class="fas fa-bolt"></i>
+                  <div>
+                    <strong>ASAP</strong>
+                    <span>Deliver as soon as possible</span>
+                  </div>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="deliveryTime" value="scheduled">
+                <div class="radio-content">
+                  <i class="fas fa-clock"></i>
+                  <div>
+                    <strong>Schedule</strong>
+                    <span>Choose a specific time</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+            <div class="schedule-time" id="scheduleTime" style="display: none;">
+              <input type="datetime-local" id="scheduledDateTime" name="scheduledDateTime">
+            </div>
           </div>
 
           <!-- Payment Method in Summary -->
@@ -200,7 +192,7 @@
             <div class="summary-payment-methods">
               <!-- eSewa -->
               <label class="summary-payment-card">
-                <input type="radio" name="summaryPaymentMethod" value="esewa" checked>
+                <input type="radio" name="summaryPaymentMethod" value="esewa">
                 <div class="summary-payment-content">
                   <div class="summary-payment-icon esewa">
                     <i class="fas fa-mobile-alt"></i>
@@ -231,6 +223,45 @@
                 </div>
               </label>
             </div>
+
+            <!-- QR Code Section (Shows when eSewa or Fonepay is selected) -->
+            <div class="qr-payment-section" id="qrPaymentSection" style="display: none;">
+              <div class="qr-code-container">
+                <div class="qr-header">
+                  <i class="fas fa-qrcode"></i>
+                  <span id="qrPaymentTitle">Scan QR to Pay</span>
+                </div>
+                <div class="qr-code-image">
+                  <img id="qrCodeImage" src="" alt="Payment QR Code">
+                </div>
+                <div class="qr-instructions">
+                  <p id="qrInstructions">Scan this QR code with your app to complete payment</p>
+                  <p class="amount-to-pay">Amount: <strong id="qrAmount">NPR 0</strong></p>
+                </div>
+              </div>
+
+              <!-- Payment Screenshot Upload -->
+              <div class="payment-proof-section">
+                <h4>
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  Upload Payment Screenshot
+                </h4>
+                <div class="file-upload-wrapper">
+                  <input type="file" id="paymentScreenshot" accept="image/*" class="file-input">
+                  <label for="paymentScreenshot" class="file-upload-label">
+                    <i class="fas fa-camera"></i>
+                    <span id="fileUploadText">Choose Screenshot</span>
+                  </label>
+                </div>
+                <div class="screenshot-preview" id="screenshotPreview" style="display: none;">
+                  <img id="previewImage" src="" alt="Payment Screenshot">
+                  <button type="button" class="remove-screenshot" id="removeScreenshot">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <p class="upload-hint">Upload a clear screenshot of your payment confirmation</p>
+              </div>
+            </div>
           </div>
 
           <div class="promo-section">
@@ -238,6 +269,15 @@
             <button type="button" id="applyPromo" class="promo-btn">Apply</button>
           </div>
           <div class="promo-message" id="promoMessage"></div>
+
+          <div class="restaurant-info" id="restaurantInfo">
+            <i class="fas fa-utensils"></i>
+            <span id="restaurantName">No restaurant selected</span>
+          </div>
+
+          <div class="order-items" id="orderItems">
+            <p class="empty-cart">Your cart is empty</p>
+          </div>
 
           <div class="summary-breakdown">
             <div class="summary-row">

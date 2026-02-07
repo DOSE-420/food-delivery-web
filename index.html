@@ -3,845 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>McD Restaurants - Food Delivery</title>
+<title>MeroEats - Food Delivery Platform</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --primary: #E23744;
-  --primary-dark: #C72A36;
-  --primary-light: #FFE8EA;
-  --accent: #FFC72C;
-  --text-dark: #1C1C1C;
-  --text-medium: #696969;
-  --text-light: #9C9C9C;
-  --bg-light: #F8F8F8;
-  --bg-white: #FFFFFF;
-  --success: #48C479;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-light);
-  color: var(--text-dark);
-  overflow-x: hidden;
-}
-
-/* ============ HEADER ============ */
-.header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: var(--bg-white);
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  box-shadow: var(--shadow-sm);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-
-.nav-container {
-  max-width: 1280px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-}
-
-.logo img {
-  height: 48px;
-  transition: transform 0.2s ease;
-}
-
-.logo img:hover {
-  transform: scale(1.05);
-}
-
-.nav-links {
-  display: flex;
-  gap: 32px;
-  align-items: center;
-}
-
-.nav-link {
-  text-decoration: none;
-  color: var(--text-dark);
-  font-weight: 500;
-  font-size: 15px;
-  transition: color 0.2s;
-  position: relative;
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--primary);
-  transition: width 0.3s ease;
-}
-
-.nav-link:hover {
-  color: var(--primary);
-}
-
-.nav-link:hover::after {
-  width: 100%;
-}
-
-.hamburger {
-  display: none;
-  font-size: 24px;
-  background: none;
-  border: none;
-  color: var(--text-dark);
-  cursor: pointer;
-}
-
-.mobile-nav {
-  position: fixed;
-  top: 72px;
-  right: 0;
-  width: 280px;
-  height: calc(100vh - 72px);
-  background: var(--bg-white);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
-  z-index: 9998;
-  box-shadow: -4px 0 20px rgba(0,0,0,0.1);
-}
-
-.mobile-nav.open {
-  transform: translateX(0);
-}
-
-.mobile-nav a {
-  text-decoration: none;
-  color: var(--text-dark);
-  font-weight: 500;
-  font-size: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  transition: color 0.2s;
-}
-
-.mobile-nav a:hover {
-  color: var(--primary);
-}
-
-.nav-icons {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  position: relative;
-}
-
-.icon-btn {
-  font-size: 20px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-dark);
-  position: relative;
-  transition: all 0.2s ease;
-  padding: 8px;
-  border-radius: 8px;
-}
-
-.icon-btn:hover {
-  background: var(--bg-light);
-  color: var(--primary);
-  transform: scale(1.05);
-}
-
-.cart-count {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  background: var(--primary);
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 10px;
-  min-width: 18px;
-  text-align: center;
-}
-
-.search-wrap {
-  display: flex;
-  align-items: center;
-  width: 0;
-  overflow: hidden;
-  transition: width 0.35s ease;
-  background: var(--bg-light);
-  border-radius: 8px;
-}
-
-.search-wrap.active {
-  width: 240px;
-  padding: 0 12px;
-}
-
-.search-wrap input {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* ============ HERO SECTION ============ */
-.hero {
-  margin-top: 72px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  padding: 48px 24px;
-  color: white;
-  text-align: center;
-}
-
-.hero h1 {
-  font-size: 42px;
-  font-weight: 800;
-  margin-bottom: 12px;
-  letter-spacing: -0.5px;
-}
-
-.hero p {
-  font-size: 18px;
-  opacity: 0.95;
-  font-weight: 400;
-}
-
-/* ============ FILTERS ============ */
-.filters-section {
-  max-width: 1280px;
-  margin: 32px auto;
-  padding: 0 24px;
-}
-
-.filter-tabs {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  scrollbar-width: none;
-}
-
-.filter-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.filter-chip {
-  padding: 10px 20px;
-  border: 2px solid #E0E0E0;
-  background: white;
-  border-radius: 24px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  color: var(--text-medium);
-}
-
-.filter-chip:hover {
-  border-color: var(--primary);
-  background: var(--primary-light);
-  color: var(--primary);
-}
-
-.filter-chip.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: white;
-}
-
-.sort-dropdown {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.sort-label {
-  font-size: 14px;
-  color: var(--text-medium);
-  font-weight: 500;
-}
-
-select {
-  padding: 10px 16px;
-  border: 2px solid #E0E0E0;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  background: white;
-  color: var(--text-dark);
-  outline: none;
-  transition: border-color 0.2s;
-  font-family: 'Poppins', sans-serif;
-}
-
-select:hover, select:focus {
-  border-color: var(--primary);
-}
-
-/* ============ MAIN CONTENT ============ */
-main {
-  max-width: 1280px;
-  margin: 0 auto 60px;
-  padding: 0 24px;
-}
-
-.section-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 24px;
-  color: var(--text-dark);
-}
-
-.restaurants {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-  animation: fadeInUp 0.6s ease;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ============ RESTAURANT CARDS (ZOMATO STYLE) ============ */
-.restaurant-card {
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.restaurant-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
-}
-
-.card-image-wrapper {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-}
-
-.restaurant-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.restaurant-card:hover img {
-  transform: scale(1.1);
-}
-
-/* Image Badges */
-.card-badges {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  z-index: 2;
-}
-
-.offer-badge {
-  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
-}
-
-.favorite-btn {
-  background: rgba(255, 255, 255, 0.95);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 16px;
-  color: var(--text-medium);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.favorite-btn:hover {
-  transform: scale(1.1);
-}
-
-.favorite-btn.active {
-  color: var(--primary);
-}
-
-.delivery-time-badge {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-dark);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.delivery-time-badge i {
-  color: var(--primary);
-}
-
-/* Card Content */
-.card-content {
-  padding: 16px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.card-header {
-  margin-bottom: 8px;
-}
-
-.restaurant-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-dark);
-  margin-bottom: 4px;
-  line-height: 1.3;
-}
-
-.cuisine-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-
-.cuisine-tag {
-  font-size: 12px;
-  color: var(--text-medium);
-  background: var(--bg-light);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-weight: 500;
-}
-
-.card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding-top: 0px;
-  border-top: 1px solid rgba(0,0,0,0.05);
-}
-
-.rating {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--success);
-  color: white;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.rating i {
-  font-size: 11px;
-}
-
-.reviews {
-  font-size: 12px;
-  color: var(--text-light);
-  font-weight: 500;
-}
-
-.location {
-  font-size: 13px;
-  color: var(--text-medium);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.location i {
-  color: var(--primary);
-  font-size: 12px;
-}
-
-.price-range {
-  font-size: 13px;
-  color: var(--text-dark);
-  font-weight: 600;
-  margin-bottom: 12px;
-}
-
-.menu-btn {
-  display: block;
-  text-align: center;
-  padding: 12px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  margin-top: auto;
-  position: relative;
-  overflow: hidden;
-}
-
-.menu-btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  transform: translate(-50%, -50%);
-  transition: width 0.5s, height 0.5s;
-}
-
-.menu-btn:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
-.menu-btn:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(226, 55, 68, 0.3);
-}
-
-/* ============ CART DRAWER ============ */
-.cart-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 380px;
-  height: 100vh;
-  background: white;
-  transform: translateX(100%);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 10000;
-  padding: 24px;
-  box-shadow: -8px 0 32px rgba(0,0,0,0.15);
-  display: flex;
-  flex-direction: column;
-}
-
-.cart-drawer.open {
-  transform: translateX(0);
-}
-
-.cart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid var(--bg-light);
-}
-
-.cart-header h2 {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-dark);
-}
-
-#clearCartBtn {
-  background: none;
-  border: none;
-  color: var(--primary);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 13px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-#clearCartBtn:hover {
-  background: var(--primary-light);
-}
-
-#cartItems {
-  list-style: none;
-  flex: 1;
-  overflow-y: auto;
-  margin-bottom: 16px;
-}
-
-#cartItems li {
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  border-radius: 8px;
-  background: var(--bg-light);
-  transition: background 0.2s;
-}
-
-#cartItems li:hover {
-  background: var(--primary-light);
-}
-
-.cart-item-name {
-  font-weight: 600;
-  color: var(--text-dark);
-  font-size: 14px;
-}
-
-.cart-item-delete {
-  background: none;
-  border: none;
-  color: var(--primary);
-  cursor: pointer;
-  font-size: 16px;
-  transition: transform 0.2s;
-  padding: 4px;
-}
-
-.cart-item-delete:hover {
-  transform: scale(1.2);
-}
-
-.cart-total {
-  font-weight: 700;
-  font-size: 20px;
-  color: var(--text-dark);
-  margin-bottom: 8px;
-  padding: 16px 0;
-  border-top: 2px solid var(--bg-light);
-}
-
-#cartRestaurantName {
-  font-size: 13px;
-  color: var(--text-medium);
-  margin-bottom: 16px;
-  font-weight: 500;
-}
-
-.checkout-btn {
-  width: 100%;
-  padding: 16px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  font-weight: 700;
-  font-size: 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.checkout-btn:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(226, 55, 68, 0.3);
-}
-
-/* ============ FOOTER ============ */
-footer {
-  background: var(--text-dark);
-  color: white;
-  padding: 60px 20px 20px;
-}
-
-.footer-container {
-  max-width: 1280px;
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 40px;
-  margin-bottom: 40px;
-}
-
-footer h4 {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: white;
-}
-
-footer p, footer a {
-  font-size: 14px;
-  color: rgba(255,255,255,0.7);
-  text-decoration: none;
-  line-height: 1.8;
-  transition: color 0.2s;
-}
-
-footer a:hover {
-  color: white;
-}
-
-.social-icons {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.social-icons a {
-  width: 40px;
-  height: 40px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.social-icons a:hover {
-  background: var(--primary);
-  transform: translateY(-3px);
-}
-
-.bottom-line {
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 20px;
-  text-align: center;
-  font-size: 13px;
-  color: rgba(255,255,255,0.5);
-}
-
-/* ============ UTILITIES ============ */
-.restaurant-card.search-hidden {
-  display: none !important;
-}
-
-#noRestaurantResults {
-  text-align: center;
-  padding: 60px 20px;
-  font-size: 18px;
-  color: var(--text-medium);
-}
-
-#noRestaurantResults i {
-  font-size: 64px;
-  color: var(--text-light);
-  margin-bottom: 16px;
-  display: block;
-}
-
-/* ============ RESPONSIVE ============ */
-@media (max-width: 992px) {
-  .nav-links {
-    display: none;
-  }
-  
-  .hamburger {
-    display: block;
-  }
-  
-  .cart-drawer {
-    width: 80%;
-    max-width: 380px;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero h1 {
-    font-size: 32px;
-  }
-  
-  .hero p {
-    font-size: 16px;
-  }
-  
-  .restaurants {
-    grid-template-columns: 1fr;
-  }
-  
-  .search-wrap.active {
-    width: 180px;
-  }
-}
-
-@media (max-width: 576px) {
-  .filter-tabs {
-    gap: 8px;
-  }
-  
-  .filter-chip {
-    font-size: 13px;
-    padding: 8px 16px;
-  }
-  
-  .sort-dropdown {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-}
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -850,14 +15,14 @@ footer a:hover {
   <div class="nav-container">
     <div class="logo">
       <a href="index.html">
-        <img src="green.png" alt="McD Logo">
+        <img src="green.png" alt="MeroEats Logo">
       </a>
     </div>
 
     <nav class="nav-links">
       <a href="index.html" class="nav-link">Home</a>
-      <a href="#" class="nav-link">Restaurants</a>
-      <a href="#" class="nav-link">Support</a>
+      <a href="#restaurants" class="nav-link">Restaurants</a>
+      <a href="#" class="nav-link">About</a>
       <a href="#" class="nav-link">Contact</a>
     </nav>
 
@@ -875,16 +40,277 @@ footer a:hover {
         <i class="fas fa-shopping-cart"></i>
         <span class="cart-count" id="cartCount">0</span>
       </button>
+      
+      <div class="user-menu" id="userMenu" style="display: none;">
+        <button class="icon-btn user-avatar" id="userAvatarBtn">
+          <i class="fas fa-user-circle"></i>
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <i class="fas fa-user-circle"></i>
+            <div>
+              <h4 id="userDisplayName">User Name</h4>
+              <p id="userDisplayEmail">user@email.com</p>
+            </div>
+          </div>
+          <a href="my-orders.html" id="myOrdersBtn"><i class="fas fa-receipt"></i> My Orders</a>
+          <a href="#" id="myProfileBtn"><i class="fas fa-user"></i> Profile</a>
+          <a href="#" id="savedAddressesBtn"><i class="fas fa-map-marker-alt"></i> Saved Addresses</a>
+          <a href="#" id="favoritesBtn"><i class="fas fa-heart"></i> Favorites</a>
+          <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+      </div>
+      
+      <button class="btn-login" id="loginBtn">
+        <i class="fas fa-user"></i> Login
+      </button>
     </div>
   </div>
 </header>
 
-<!-- MOBILE NAV -->
+<!-- Mobile Navigation -->
 <div class="mobile-nav" id="mobileNav">
   <a href="index.html">Home</a>
-  <a href="#">Restaurants</a>
-  <a href="#">Support</a>
+  <a href="#restaurants">Restaurants</a>
+  <a href="#">About</a>
   <a href="#">Contact</a>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="auth-modal" id="authModal">
+  <div class="auth-modal-content">
+    <button class="auth-modal-close" id="authModalClose">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="auth-form-container" id="loginFormContainer">
+      <div class="auth-header">
+        <h2>Welcome Back</h2>
+        <p>Login to continue ordering delicious food</p>
+      </div>
+      
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="loginEmail">Email or Phone</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="text" id="loginEmail" required placeholder="Enter email or phone">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="loginPassword" required placeholder="Enter password">
+            <button type="button" class="toggle-password" data-target="loginPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-password">Forgot Password?</a>
+        </div>
+        
+        <button type="submit" class="btn-auth-submit">
+          <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+        
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+        
+        <div class="social-login">
+          <button type="button" class="btn-social google">
+            <i class="fab fa-google"></i> Continue with Google
+          </button>
+          <button type="button" class="btn-social facebook">
+            <i class="fab fa-facebook-f"></i> Continue with Facebook
+          </button>
+        </div>
+        
+        <div class="auth-switch">
+          <p>Don't have an account? <a href="#" id="showSignupForm">Sign Up</a></p>
+        </div>
+      </form>
+    </div>
+    
+    <div class="auth-form-container" id="signupFormContainer" style="display: none;">
+      <div class="auth-header">
+        <h2>Create Account</h2>
+        <p>Sign up to start ordering</p>
+      </div>
+      
+      <form id="signupForm" class="auth-form">
+        <div class="form-group">
+          <label for="signupName">Full Name</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="signupName" required placeholder="Enter your full name">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="signupEmail" required placeholder="Enter your email">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="signupPhone">Phone Number</label>
+          <div class="input-with-icon">
+            <i class="fas fa-phone"></i>
+            <input type="tel" id="signupPhone" required placeholder="98XXXXXXXX" pattern="[0-9]{10}">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signupPassword" required placeholder="Create a password" minlength="6">
+            <button type="button" class="toggle-password" data-target="signupPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <small class="password-hint">Must be at least 6 characters</small>
+        </div>
+        
+        <div class="form-group">
+          <label for="signupConfirmPassword">Confirm Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signupConfirmPassword" required placeholder="Confirm your password">
+            <button type="button" class="toggle-password" data-target="signupConfirmPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="terms-accept">
+            <input type="checkbox" id="acceptTerms" required>
+            <span>I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></span>
+          </label>
+        </div>
+        
+        <button type="submit" class="btn-auth-submit">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+        
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+        
+        <div class="social-login">
+          <button type="button" class="btn-social google">
+            <i class="fab fa-google"></i> Sign up with Google
+          </button>
+          <button type="button" class="btn-social facebook">
+            <i class="fab fa-facebook-f"></i> Sign up with Facebook
+          </button>
+        </div>
+        
+        <div class="auth-switch">
+          <p>Already have an account? <a href="#" id="showLoginForm">Login</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- GUEST PROMPT MODAL -->
+<div class="guest-prompt-modal" id="guestPromptModal">
+  <div class="guest-prompt-content">
+    <div class="guest-prompt-header">
+      <i class="fas fa-user-lock"></i>
+      <h2>Login to Continue</h2>
+      <p>Please login or create an account to place your order</p>
+    </div>
+    
+    <div class="guest-prompt-benefits">
+      <h3>Why create an account?</h3>
+      <ul>
+        <li><i class="fas fa-check-circle"></i> Track your orders in real-time</li>
+        <li><i class="fas fa-check-circle"></i> Save addresses for faster checkout</li>
+        <li><i class="fas fa-check-circle"></i> View order history</li>
+        <li><i class="fas fa-check-circle"></i> Rate restaurants and share reviews</li>
+        <li><i class="fas fa-check-circle"></i> Exclusive offers and rewards</li>
+      </ul>
+    </div>
+    
+    <div class="guest-prompt-actions">
+      <button class="btn-guest-login" id="guestLoginBtn">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+      <button class="btn-guest-signup" id="guestSignupBtn">
+        <i class="fas fa-user-plus"></i> Create Account
+      </button>
+    </div>
+    
+    <button class="guest-prompt-close" id="guestPromptClose">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+</div>
+
+<!-- RATING MODAL -->
+<div class="rating-modal" id="ratingModal">
+  <div class="rating-modal-content">
+    <button class="modal-close" id="ratingModalClose">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="rating-header">
+      <div class="restaurant-logo" id="ratingRestaurantLogo">
+        <i class="fas fa-utensils"></i>
+      </div>
+      <h2>Rate Your Experience</h2>
+      <p id="ratingRestaurantName">Restaurant Name</p>
+    </div>
+    
+    <form id="ratingForm">
+      <div class="rating-stars-section">
+        <label>How was your food?</label>
+        <div class="rating-stars" id="ratingStars">
+          <i class="far fa-star" data-rating="1"></i>
+          <i class="far fa-star" data-rating="2"></i>
+          <i class="far fa-star" data-rating="3"></i>
+          <i class="far fa-star" data-rating="4"></i>
+          <i class="far fa-star" data-rating="5"></i>
+        </div>
+        <p class="rating-text" id="ratingText">Tap to rate</p>
+      </div>
+      
+      <div class="form-group">
+        <label for="reviewComment">Share your experience (optional)</label>
+        <textarea id="reviewComment" rows="4" placeholder="Tell us what you liked or what could be improved..."></textarea>
+      </div>
+      
+      <div class="quick-tags">
+        <p>Quick tags:</p>
+        <div class="tag-list">
+          <button type="button" class="tag-btn" data-tag="Delicious">😋 Delicious</button>
+          <button type="button" class="tag-btn" data-tag="Fast Delivery">⚡ Fast Delivery</button>
+          <button type="button" class="tag-btn" data-tag="Fresh">🌿 Fresh</button>
+          <button type="button" class="tag-btn" data-tag="Hot">🔥 Hot</button>
+          <button type="button" class="tag-btn" data-tag="Good Packaging">📦 Good Packaging</button>
+          <button type="button" class="tag-btn" data-tag="Value for Money">💰 Value for Money</button>
+        </div>
+      </div>
+      
+      <button type="submit" class="btn-submit-rating" id="submitRatingBtn" disabled>
+        <i class="fas fa-paper-plane"></i> Submit Review
+      </button>
+    </form>
+  </div>
 </div>
 
 <!-- HERO -->
@@ -902,6 +328,8 @@ footer a:hover {
     <button class="filter-chip" data-filter="fast-food">🍔 Fast Food</button>
     <button class="filter-chip" data-filter="desserts">🍰 Desserts</button>
     <button class="filter-chip" data-filter="healthy">🥗 Healthy</button>
+    <button class="filter-chip" data-filter="western">🥩 Western</button>
+    <button class="filter-chip" data-filter="fusion">🍱 Fusion</button>
   </div>
   
   <div class="sort-dropdown">
@@ -929,11 +357,11 @@ footer a:hover {
   
   <div class="cart-total" id="cartTotal">Total: NPR 0</div>
   <div id="cartRestaurantName"></div>
-  <button class="checkout-btn">Proceed to Checkout</button>
+  <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
 </div>
 
 <!-- MAIN CONTENT -->
-<main>
+<main id="restaurants">
   <h2 class="section-title">Nearby Restaurants</h2>
   
   <div id="noRestaurantResults" style="display:none;">
@@ -942,263 +370,7 @@ footer a:hover {
   </div>
 
   <div class="restaurants">
-    <!-- Restaurant Card 1 -->
-    <div class="restaurant-card" 
-         data-lat="27.7150" 
-         data-lon="85.3200"
-         data-cuisine="western,fusion"
-         data-rating="4.5"
-         data-price="800">
-      <div class="card-image-wrapper">
-        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80" alt="Walnut Bistro">
-        <div class="card-badges">
-          <span class="offer-badge">50% OFF</span>
-          <button class="favorite-btn" onclick="toggleFavorite(this)">
-            <i class="far fa-heart"></i>
-          </button>
-        </div>
-        <div class="delivery-time-badge">
-          <i class="fas fa-clock"></i>
-          <span class="delivery-time">25 mins</span>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-header">
-          <h3 class="restaurant-name">Walnut Bistro</h3>
-          <div class="cuisine-tags">
-            <span class="cuisine-tag">Western</span>
-            <span class="cuisine-tag">Fusion</span>
-          </div>
-        </div>
-        <div class="card-meta">
-          <div class="rating">
-            <i class="fas fa-star"></i>
-            <span>4.5</span>
-          </div>
-          <span class="reviews">1.2K reviews</span>
-        </div>
-        <div class="location">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>Thamel, Kathmandu • <span class="distance">2.3 km</span></span>
-        </div>
-        <a href="menu.html?restaurant=walnut-bistro" class="menu-btn">View Menu</a>
-      </div>
-    </div>
-
-    <!-- Restaurant Card 2 -->
-    <div class="restaurant-card" 
-         data-lat="27.6850" 
-         data-lon="85.3160"
-         data-cuisine="fast-food"
-         data-rating="4.2"
-         data-price="500">
-      <div class="card-image-wrapper">
-        <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=800&q=80" alt="Kathmandu Grill">
-        <div class="card-badges">
-          <span class="offer-badge">Free Delivery</span>
-          <button class="favorite-btn" onclick="toggleFavorite(this)">
-            <i class="far fa-heart"></i>
-          </button>
-        </div>
-        <div class="delivery-time-badge">
-          <i class="fas fa-clock"></i>
-          <span class="delivery-time">18 mins</span>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-header">
-          <h3 class="restaurant-name">Kathmandu Grill</h3>
-          <div class="cuisine-tags">
-            <span class="cuisine-tag">Grilled</span>
-            <span class="cuisine-tag">Fast Food</span>
-          </div>
-        </div>
-        <div class="card-meta">
-          <div class="rating">
-            <i class="fas fa-star"></i>
-            <span>4.2</span>
-          </div>
-          <span class="reviews">850 reviews</span>
-        </div>
-        <div class="location">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>Jhamsikhel, Lalitpur • <span class="distance">3.1 km</span></span>
-        </div>
-        <a href="menu.html?restaurant=kathmandu-grill" class="menu-btn">View Menu</a>
-      </div>
-    </div>
-
-    <!-- Restaurant Card 3 -->
-    <div class="restaurant-card" 
-         data-lat="27.7000" 
-         data-lon="85.3080"
-         data-cuisine="italian"
-         data-rating="4.7"
-         data-price="1000">
-      <div class="card-image-wrapper">
-        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Everest Pizza">
-        <div class="card-badges">
-          <span class="offer-badge">30% OFF</span>
-          <button class="favorite-btn" onclick="toggleFavorite(this)">
-            <i class="far fa-heart"></i>
-          </button>
-        </div>
-        <div class="delivery-time-badge">
-          <i class="fas fa-clock"></i>
-          <span class="delivery-time">30 mins</span>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-header">
-          <h3 class="restaurant-name">Everest Pizza</h3>
-          <div class="cuisine-tags">
-            <span class="cuisine-tag">Italian</span>
-            <span class="cuisine-tag">Pizza</span>
-          </div>
-        </div>
-        <div class="card-meta">
-          <div class="rating">
-            <i class="fas fa-star"></i>
-            <span>4.7</span>
-          </div>
-          <span class="reviews">2.1K reviews</span>
-        </div>
-        <div class="location">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>Durbar Marg, Kathmandu • <span class="distance">1.8 km</span></span>
-        </div>
-        <a href="menu.html?restaurant=everest-pizza" class="menu-btn">View Menu</a>
-      </div>
-    </div>
-
-    <!-- Restaurant Card 4 -->
-    <div class="restaurant-card" 
-         data-lat="27.6920" 
-         data-lon="85.3190"
-         data-cuisine="asian"
-         data-rating="4.4"
-         data-price="700">
-      <div class="card-image-wrapper">
-        <img src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=800&q=80" alt="Himalayan Wok">
-        <div class="card-badges">
-          <span class="offer-badge">20% OFF</span>
-          <button class="favorite-btn" onclick="toggleFavorite(this)">
-            <i class="far fa-heart"></i>
-          </button>
-        </div>
-        <div class="delivery-time-badge">
-          <i class="fas fa-clock"></i>
-          <span class="delivery-time">22 mins</span>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-header">
-          <h3 class="restaurant-name">Himalayan Wok</h3>
-          <div class="cuisine-tags">
-            <span class="cuisine-tag">Asian</span>
-            <span class="cuisine-tag">Chinese</span>
-          </div>
-        </div>
-        <div class="card-meta">
-          <div class="rating">
-            <i class="fas fa-star"></i>
-            <span>4.4</span>
-          </div>
-          <span class="reviews">950 reviews</span>
-        </div>
-        <div class="location">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>Lazimpat, Kathmandu • <span class="distance">2.7 km</span></span>
-        </div>
-        <a href="menu.html?restaurant=himalayan-wok" class="menu-btn">View Menu</a>
-      </div>
-    </div>
-
-    <!-- Restaurant Card 5 -->
-    <div class="restaurant-card" 
-         data-lat="27.6980" 
-         data-lon="85.3220"
-         data-cuisine="desserts"
-         data-rating="4.6"
-         data-price="400">
-      <div class="card-image-wrapper">
-        <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800&q=80" alt="Sweet Escape">
-        <div class="card-badges">
-          <span class="offer-badge">Buy 1 Get 1</span>
-          <button class="favorite-btn" onclick="toggleFavorite(this)">
-            <i class="far fa-heart"></i>
-          </button>
-        </div>
-        <div class="delivery-time-badge">
-          <i class="fas fa-clock"></i>
-          <span class="delivery-time">15 mins</span>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-header">
-          <h3 class="restaurant-name">Sweet Escape</h3>
-          <div class="cuisine-tags">
-            <span class="cuisine-tag">Desserts</span>
-            <span class="cuisine-tag">Bakery</span>
-          </div>
-        </div>
-        <div class="card-meta">
-          <div class="rating">
-            <i class="fas fa-star"></i>
-            <span>4.6</span>
-          </div>
-          <span class="reviews">1.5K reviews</span>
-        </div>
-        <div class="location">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>Pulchowk, Lalitpur • <span class="distance">3.5 km</span></span>
-        </div>
-        <a href="menu.html?restaurant=sweet-escape" class="menu-btn">View Menu</a>
-      </div>
-    </div>
-
-    <!-- Restaurant Card 6 -->
-    <div class="restaurant-card" 
-         data-lat="27.7050" 
-         data-lon="85.3170"
-         data-cuisine="healthy"
-         data-rating="4.3"
-         data-price="900">
-      <div class="card-image-wrapper">
-        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80" alt="Green Bowl">
-        <div class="card-badges">
-          <span class="offer-badge">Healthy Choice</span>
-          <button class="favorite-btn" onclick="toggleFavorite(this)">
-            <i class="far fa-heart"></i>
-          </button>
-        </div>
-        <div class="delivery-time-badge">
-          <i class="fas fa-clock"></i>
-          <span class="delivery-time">20 mins</span>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-header">
-          <h3 class="restaurant-name">Green Bowl</h3>
-          <div class="cuisine-tags">
-            <span class="cuisine-tag">Healthy</span>
-            <span class="cuisine-tag">Salads</span>
-          </div>
-        </div>
-        <div class="card-meta">
-          <div class="rating">
-            <i class="fas fa-star"></i>
-            <span>4.3</span>
-          </div>
-          <span class="reviews">680 reviews</span>
-        </div>
-        <div class="location">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>Sanepa, Lalitpur • <span class="distance">2.9 km</span></span>
-        </div>
-        <a href="menu.html?restaurant=green-bowl" class="menu-btn">View Menu</a>
-      </div>
-    </div>
+    <!-- Restaurant cards loaded by JavaScript -->
   </div>
 </main>
 
@@ -1206,7 +378,7 @@ footer a:hover {
 <footer>
   <div class="footer-container">
     <div>
-      <h4>About McD</h4>
+      <h4>About MeroEats</h4>
       <p>Delivering your favorite meals fast and fresh across Kathmandu Valley.</p>
       <div class="social-icons">
         <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -1228,315 +400,12 @@ footer a:hover {
     </div>
   </div>
   <div class="bottom-line">
-    © 2026 McD. All rights reserved.
+    © 2026 MeroEats. All rights reserved.
   </div>
 </footer>
 
-<script>
-// ==================== MOBILE MENU ====================
-const hamburger = document.getElementById('hamburger');
-const mobileNav = document.getElementById('mobileNav');
-
-hamburger.addEventListener('click', e => {
-  e.stopPropagation();
-  mobileNav.classList.toggle('open');
-});
-
-document.addEventListener('click', e => {
-  if (!mobileNav.contains(e.target) && !hamburger.contains(e.target)) {
-    mobileNav.classList.remove('open');
-  }
-});
-
-// ==================== SEARCH ====================
-const searchBtn = document.getElementById('searchBtn');
-const searchWrap = document.getElementById('searchWrap');
-const searchInput = document.getElementById('searchInput');
-
-searchBtn.addEventListener('click', e => {
-  e.stopPropagation();
-  searchWrap.classList.toggle('active');
-  if (searchWrap.classList.contains('active')) {
-    searchInput.focus();
-  }
-});
-
-document.addEventListener('click', e => {
-  if (!searchWrap.contains(e.target) && !searchBtn.contains(e.target)) {
-    searchWrap.classList.remove('active');
-  }
-});
-
-// Debounce function
-function debounce(func, wait) {
-  let timeout;
-  return function(...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
-  };
-}
-
-// Search functionality
-const performSearch = debounce(function(query) {
-  query = query.toLowerCase();
-  const restaurants = document.querySelectorAll('.restaurant-card');
-  let found = false;
-
-  restaurants.forEach(card => {
-    const name = card.querySelector('.restaurant-name').textContent.toLowerCase();
-    const cuisines = card.dataset.cuisine.toLowerCase();
-
-    if (name.includes(query) || cuisines.includes(query)) {
-      card.classList.remove('search-hidden');
-      found = true;
-    } else {
-      card.classList.add('search-hidden');
-    }
-  });
-
-  document.getElementById('noRestaurantResults').style.display = found || query === '' ? 'none' : 'block';
-}, 300);
-
-searchInput.addEventListener('input', e => {
-  performSearch(e.target.value);
-});
-
-// ==================== FILTERS ====================
-document.querySelectorAll('.filter-chip').forEach(chip => {
-  chip.addEventListener('click', function() {
-    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-    this.classList.add('active');
-    
-    const filter = this.dataset.filter;
-    const restaurants = document.querySelectorAll('.restaurant-card');
-    
-    restaurants.forEach(card => {
-      if (filter === 'all') {
-        card.classList.remove('search-hidden');
-      } else {
-        const cuisines = card.dataset.cuisine.toLowerCase();
-        if (cuisines.includes(filter)) {
-          card.classList.remove('search-hidden');
-        } else {
-          card.classList.add('search-hidden');
-        }
-      }
-    });
-    
-    updateNoResults();
-  });
-});
-
-// ==================== SORT ====================
-document.getElementById('sortSelect').addEventListener('change', function() {
-  const sortBy = this.value;
-  const container = document.querySelector('.restaurants');
-  const cards = Array.from(container.children);
-  
-  cards.sort((a, b) => {
-    switch(sortBy) {
-      case 'rating':
-        return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
-      case 'price-low':
-        return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
-      case 'price-high':
-        return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
-      case 'distance':
-        return (parseFloat(a.dataset.distance) || 0) - (parseFloat(b.dataset.distance) || 0);
-      default:
-        return 0;
-    }
-  });
-  
-  cards.forEach(card => container.appendChild(card));
-});
-
-// ==================== FAVORITE ====================
-function toggleFavorite(btn) {
-  btn.classList.toggle('active');
-  const icon = btn.querySelector('i');
-  
-  if (btn.classList.contains('active')) {
-    icon.classList.remove('far');
-    icon.classList.add('fas');
-    
-    // Save to localStorage
-    const card = btn.closest('.restaurant-card');
-    const name = card.querySelector('.restaurant-name').textContent;
-    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    if (!favorites.includes(name)) {
-      favorites.push(name);
-      localStorage.setItem('favorites', JSON.stringify(favorites));
-    }
-  } else {
-    icon.classList.remove('fas');
-    icon.classList.add('far');
-    
-    // Remove from localStorage
-    const card = btn.closest('.restaurant-card');
-    const name = card.querySelector('.restaurant-name').textContent;
-    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-    favorites = favorites.filter(f => f !== name);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-  }
-}
-
-// Load favorites on page load
-window.addEventListener('load', () => {
-  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-  document.querySelectorAll('.restaurant-card').forEach(card => {
-    const name = card.querySelector('.restaurant-name').textContent;
-    if (favorites.includes(name)) {
-      const btn = card.querySelector('.favorite-btn');
-      btn.classList.add('active');
-      btn.querySelector('i').classList.replace('far', 'fas');
-    }
-  });
-});
-
-// ==================== CART ====================
-let cart = JSON.parse(localStorage.getItem('cart')) || {};
-let cartRestaurant = localStorage.getItem('cartRestaurant') || null;
-
-function updateCartUI() {
-  const cartItems = document.getElementById('cartItems');
-  cartItems.innerHTML = '';
-  let total = 0, totalQty = 0;
-
-  for (let key in cart) {
-    if (cart[key].qty > 0) {
-      const li = document.createElement('li');
-      
-      const nameSpan = document.createElement('span');
-      nameSpan.classList.add('cart-item-name');
-      nameSpan.textContent = `${key} x ${cart[key].qty} = NPR ${cart[key].qty * cart[key].price}`;
-      
-      const deleteBtn = document.createElement('button');
-      deleteBtn.classList.add('cart-item-delete');
-      deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-      deleteBtn.addEventListener('click', () => {
-        delete cart[key];
-        updateCartUI();
-      });
-      
-      li.appendChild(nameSpan);
-      li.appendChild(deleteBtn);
-      cartItems.appendChild(li);
-      
-      total += cart[key].qty * cart[key].price;
-      totalQty += cart[key].qty;
-    }
-  }
-
-  if (totalQty === 0) {
-    cartItems.innerHTML = '<li style="text-align:center;color:var(--text-medium);">Your cart is empty</li>';
-    cartRestaurant = null;
-    localStorage.removeItem('cartRestaurant');
-  }
-
-  document.getElementById('cartCount').textContent = totalQty;
-  document.getElementById('cartTotal').textContent = `Total: NPR ${total}`;
-  document.getElementById('cartRestaurantName').textContent = cartRestaurant 
-    ? "Restaurant: " + cartRestaurant.replace(/-/g, ' ').toUpperCase() 
-    : "";
-
-  localStorage.setItem('cart', JSON.stringify(cart));
-  if (cartRestaurant) localStorage.setItem('cartRestaurant', cartRestaurant);
-}
-
-document.getElementById('clearCartBtn').addEventListener('click', () => {
-  cart = {};
-  cartRestaurant = null;
-  localStorage.removeItem('cart');
-  localStorage.removeItem('cartRestaurant');
-  updateCartUI();
-});
-
-// Cart drawer toggle
-const cartBtn = document.getElementById('cartBtn');
-const cartDrawer = document.getElementById('cartDrawer');
-
-cartBtn.addEventListener('click', e => {
-  e.stopPropagation();
-  cartDrawer.classList.toggle('open');
-});
-
-document.addEventListener('click', e => {
-  if (!cartDrawer.contains(e.target) && !cartBtn.contains(e.target)) {
-    cartDrawer.classList.remove('open');
-  }
-});
-
-updateCartUI();
-
-// ==================== DISTANCE CALCULATION ====================
-window.addEventListener('load', () => {
-  function distance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3;
-    const toRad = d => d * Math.PI / 180;
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
-  }
-
-  function formatDistance(m) {
-    return m < 1000 ? Math.round(m) + " m" : (m / 1000).toFixed(1) + " km";
-  }
-
-  function deliveryTime(m) {
-    const base = 15;
-    const perKm = 5;
-    const km = m / 1000;
-    const min = Math.round(base + km * perKm);
-    return `${min}–${min + 6} mins`;
-  }
-
-  function applyDistance(userLat, userLon) {
-    const container = document.querySelector('.restaurants');
-    const cards = Array.from(container.children);
-
-    cards.forEach(card => {
-      const d = distance(
-        userLat,
-        userLon,
-        parseFloat(card.dataset.lat),
-        parseFloat(card.dataset.lon)
-      );
-      card.dataset.distance = d;
-
-      const distanceSpan = card.querySelector('.distance');
-      if (distanceSpan) {
-        distanceSpan.textContent = formatDistance(d);
-      }
-
-      const timeSpan = card.querySelector('.delivery-time');
-      if (timeSpan) {
-        timeSpan.textContent = deliveryTime(d);
-      }
-    });
-
-    // Sort by distance initially
-    cards.sort((a, b) => a.dataset.distance - b.dataset.distance);
-    cards.forEach(c => container.appendChild(c));
-  }
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => applyDistance(pos.coords.latitude, pos.coords.longitude),
-      () => console.warn("Location access denied")
-    );
-  }
-});
-
-function updateNoResults() {
-  const visibleCards = document.querySelectorAll('.restaurant-card:not(.search-hidden)');
-  document.getElementById('noRestaurantResults').style.display = 
-    visibleCards.length === 0 ? 'block' : 'none';
-}
-</script>
-
+<script src="script.js"></script>
+<script src="auth-script.js"></script>
+<script src="main-integration.js"></script>
 </body>
 </html>
