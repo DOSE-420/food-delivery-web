@@ -211,11 +211,7 @@ body {
   background: transparent;
   font-family: 'Poppins', sans-serif;
 }
-input,
-textarea,
-select {
-  font-size: 16px;
-}
+
 /* ==================== HERO SECTION ==================== */
 .hero {
   margin-top: 72px;
@@ -350,6 +346,8 @@ main {
 /* ==================== RESTAURANT CARDS ==================== */
 .restaurant-card {
   background: white;
+    text-decoration: none; /* Remove underline */
+
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
@@ -359,6 +357,8 @@ main {
   height: 100%;
   display: flex;
   flex-direction: column;
+    outline: none; /* Remove focus outline */
+  -webkit-tap-highlight-color: transparent; /* Remove blue tap highlight on mobile */
 }
 
 .restaurant-card:hover {
@@ -1066,7 +1066,7 @@ footer a:hover {
   padding: 14px 16px 14px 48px;
   border: 2px solid #E0E0E0;
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 14px;
   font-family: 'Poppins', sans-serif;
   transition: all var(--transition-base);
   background: var(--bg-light);
@@ -1718,13 +1718,4 @@ footer a:hover {
 .stat-item span {
   font-size: 14px;
   color: var(--text-medium);
-}
-
-@media (max-width: 768px) {
-  input,
-  textarea,
-  select,
-  .input-with-icon input {
-    font-size: 16px; /* must be 16px or larger */
-  }
 }
